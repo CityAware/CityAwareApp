@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "954660480854",
+    "project_id": "cityaware-b7f24",
+    "storage_bucket": "cityaware-b7f24.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954660480854:android:d541126710aeeaf6d2d8f7",
+        "android_client_info": {
+          "package_name": "com.example.cityaware"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2f4JEaOqbQz3KaGUYZaCri3jtFGupOjw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
