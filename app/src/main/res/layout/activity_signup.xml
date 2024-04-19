@@ -40,7 +40,7 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center_horizontal"
                 android:contentDescription="@string/loader"
-                app:srcCompat="@drawable/ic_loader" />
+                app:srcCompat="@drawable/ic_loader1" />
 
             <TextView
                 android:id="@+id/signup_error"

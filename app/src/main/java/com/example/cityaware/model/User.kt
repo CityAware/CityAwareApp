@@ -1,4 +1,3 @@
-package com.example.karenhub.model
 
 class User {
     var email: String? = ""
