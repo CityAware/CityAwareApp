@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CityAware</string>
+    <string name="app_name">KarenHub</string>
     <string name="date">Date:</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
