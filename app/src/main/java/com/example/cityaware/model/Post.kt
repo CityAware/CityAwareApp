@@ -20,26 +20,24 @@ class Post {
         this.details = details
     }
 
-    val TITLE = "title"
-    val ID = "id"
-    val IMAGE = "image"
-    val DETAILS = "details"
-    val COLLECTION = "posts"
-
-    fun fromJson(json: Map<String?, Any?>): Post {
-        val id = json[ID] as String?
-        val name = json[TITLE] as String?
-        val image = json[IMAGE] as String?
-        val details = json[DETAILS] as String?
-        return Post(id!!, name, image, details)
+    companion object {
+        const val COLLECTION = "posts"
+        fun fromJson(json: Map<String?, Any?>): Post {
+            val id = json["id"] as String?
+            val name = json["title"] as String?
+            val image = json["image"] as String?
+            val details = json["details"] as String?
+            return Post(id!!, name, image, details)
+        }
     }
+
 
     fun toJson(): Map<String, Any> {
         val json: MutableMap<String, Any> = HashMap()
-        json[ID] = getId()
-        json[TITLE] = getTitle()
-        json[IMAGE] = getImgUrl()
-        json[DETAILS] = getDetails()
+        json["id"] = getId()
+        json["title"] = getTitle()
+        json["image"] = getImgUrl()
+        json["details"] = getDetails()
         return json
     }
 
