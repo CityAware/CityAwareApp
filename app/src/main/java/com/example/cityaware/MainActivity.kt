@@ -11,6 +11,7 @@ import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
+
 class MainActivity : AppCompatActivity() {
     var navController: NavController? = null
 
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         fragmentMenuId = 0
         return super.onCreateOptionsMenu(menu)
     }
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onOptionsItemSelected( item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             navController!!.popBackStack()
         } else {
