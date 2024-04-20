@@ -1,23 +1,25 @@
 package com.example.cityaware.model
 
-import androidx.room.Dao;
-import androidx.room.Delete;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
+import androidx.room.Database
+import androidx.room.Room.databaseBuilder
+import androidx.room.RoomDatabase
+import com.example.cityaware.MyApplication
 
 
-@Dao
-interface PostsDao{
-    @get:Query("select * from Post")
-    val all: List<Post?>?
-
-    @Query("select * from Post where id = :postId")
-    fun getPostById(postId: String?): Post?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg posts: Post?)
-
-    @Delete
-    fun delete(post: Post?)
+@Database(entities = [Post::class], version = 55)
+abstract class AppLocalDbRepository() : RoomDatabase() {
+    abstract fun PostsDao (): PostDao?
 }
+
+
+object AppLocalDb {
+    val appDb: AppLocalDbRepository
+        get() = databaseBuilder(
+            MyApplication.myContext!!,
+            AppLocalDbRepository::class.java,
+            "dbPost.db"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
+}
+

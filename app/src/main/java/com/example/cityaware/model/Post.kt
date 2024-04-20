@@ -3,6 +3,7 @@ package com.example.cityaware.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+
 @Entity
 class Post {
     @PrimaryKey
@@ -19,27 +20,59 @@ class Post {
         this.details = details
     }
 
-    fun toJson(): Map<String, Any?> {
-        val json: MutableMap<String, Any?> = HashMap()
-        json[ID] = id
-        json[TITLE] = title
-        json[IMAGE] = imgUrl
-        json[DETAILS] = details
+    val TITLE = "title"
+    val ID = "id"
+    val IMAGE = "image"
+    val DETAILS = "details"
+    val COLLECTION = "posts"
+
+    fun fromJson(json: Map<String?, Any?>): Post {
+        val id = json[ID] as String?
+        val name = json[TITLE] as String?
+        val image = json[IMAGE] as String?
+        val details = json[DETAILS] as String?
+        return Post(id!!, name, image, details)
+    }
+
+    fun toJson(): Map<String, Any> {
+        val json: MutableMap<String, Any> = HashMap()
+        json[ID] = getId()
+        json[TITLE] = getTitle()
+        json[IMAGE] = getImgUrl()
+        json[DETAILS] = getDetails()
         return json
     }
 
-    companion object {
-        const val TITLE = "title"
-        const val ID = "id"
-        const val IMAGE = "image"
-        const val DETAILS = "details"
-        const val COLLECTION = "posts"
-        fun fromJson(json: Map<String?, Any?>): Post {
-            val id = json[ID] as String?
-            val name = json[TITLE] as String?
-            val image = json[IMAGE] as String?
-            val details = json[DETAILS] as String?
-            return Post(id!!, name, image, details)
-        }
+
+    fun setId( id: String?) {
+        this.id = id!!
+    }
+
+    fun setTitle(title: String?) {
+        this.title = title
+    }
+
+    fun setImgUrl(imgUrl: String?) {
+        this.imgUrl = imgUrl
+    }
+
+    fun setDetails(details: String?) {
+        this.details = details
+    }
+
+    fun getId(): String {
+        return id
+    }
+
+    fun getTitle(): String {
+        return title!!
+    }
+
+    fun getImgUrl(): String {
+        return imgUrl!!
+    }
+
+    fun getDetails(): String {
+        return details!!
     }
 }
