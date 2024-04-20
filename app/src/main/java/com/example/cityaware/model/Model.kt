@@ -5,6 +5,7 @@ import android.os.Looper
 import androidx.core.os.HandlerCompat
 import com.example.cityaware.model.AppLocalDb.appDb
 import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 
 class Model private constructor() {
@@ -33,7 +34,11 @@ class Model private constructor() {
     }
 
     fun addPost(st: Post?, listener: Listener<Void?>?) {
-        firebaseModel.addPost(st, listener)
+        if (listener != null) {
+            if (st != null) {
+                firebaseModel.addPost(st, listener)
+            }
+        }
         //        executor.execute(()->{
 //            localDb.PostDao().insertAll(st);
 //            try {
@@ -48,7 +53,7 @@ class Model private constructor() {
     }
 
     fun uploadImage(name: String?, bitmap: Bitmap?, listener: Listener<String?>?) {
-        firebaseModel.uploadImage(name, bitmap, listener)
+        listener?.let { bitmap?.let { it1 -> name?.let { it2 -> firebaseModel.uploadImage(it2, it1, it) } } }
     }
 
     companion object {

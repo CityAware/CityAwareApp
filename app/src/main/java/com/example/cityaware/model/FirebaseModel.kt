@@ -6,7 +6,6 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
 import java.util.LinkedList
-import com.example.cityaware.model.Post
 
 
 class FirebaseModel internal constructor() {
@@ -22,7 +21,7 @@ class FirebaseModel internal constructor() {
         storage = FirebaseStorage.getInstance()
     }
 
-    fun getAllPosts(callback: Model.Listener<List<Post>?>) {
+    fun getAllPosts(callback: Model.Listener<List<Post?>?>?) {
         db.collection(Post.COLLECTION).get().addOnCompleteListener { task ->
             val list: MutableList<Post> = LinkedList()
             if (task.isSuccessful) {
@@ -32,12 +31,14 @@ class FirebaseModel internal constructor() {
                     list.add(post)
                 }
             }
-            callback.onComplete(list)
+            if (callback != null) {
+                callback.onComplete(list)
+            }
         }
     }
 
     fun addPost(post: Post, listener: Model.Listener<Void?>) {
-        db.collection(Post.COLLECTION).document(post.getId()).set(post.toJson())
+        db.collection(Post.COLLECTION).document(post.id).set(post.toJson())
             .addOnCompleteListener { listener.onComplete(null) }
     }
 

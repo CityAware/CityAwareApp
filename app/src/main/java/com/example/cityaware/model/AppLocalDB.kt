@@ -4,11 +4,12 @@ import androidx.room.Database
 import androidx.room.Room.databaseBuilder
 import androidx.room.RoomDatabase
 import com.example.cityaware.MyApplication
+import com.example.cityaware.model.PostsDao;
 
 
 @Database(entities = [Post::class], version = 55)
 abstract class AppLocalDbRepository() : RoomDatabase() {
-    abstract fun PostsDao (): PostDao?
+    abstract fun PostsDao (): PostsDao?
 }
 
 
