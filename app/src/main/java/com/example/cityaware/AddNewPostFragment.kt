@@ -83,6 +83,7 @@ class AddNewPostFragment : Fragment() {
                     Model.instance().uploadImage(stId, bitmap) { url ->
                         if (url != null) {
                             post.imgUrl = url
+                            //d
                         }
                         Model.instance()
                             .addPost(post) { unused -> findNavController(view1).popBackStack() }
