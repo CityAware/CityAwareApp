@@ -1,56 +1,53 @@
 package com.example.cityaware
 
 
-import android.annotation.SuppressLint
+
+import android.content.Intent
 import android.os.Bundle
-import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.cityaware.R.*
+import com.example.cityaware.R;
+import com.example.cityaware.model.Model
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.auth.FirebaseAuth
 
 
-class LoginActivity : AppCompatActivity() {
-    var editTextemail: TextInputEditText? = null
-    var editTextpassword: TextInputEditText? = null
-    var loginBtn: Button? = null
-    var mAuth: FirebaseAuth? = null
-    @SuppressLint("MissingInflatedId")
+class LogInActivity : AppCompatActivity() {
+    var LogIn_email: TextInputEditText? = null
+    var LogIn_password: TextInputEditText? = null
+    var LogIn_btn: Button? = null
+    var i: Intent? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(layout.activity_login)
-        editTextemail = findViewById(id.email)
-        editTextpassword = findViewById(id.password)
-        editTextpassword!!.setTransformationMethod(PasswordTransformationMethod())
-        loginBtn = findViewById<Button>(id.login_btn)
-        loginBtn!!.setOnClickListener(View.OnClickListener {
-            val password: String
+        setContentView(R.layout.activity_login)
+        LogIn_email = findViewById<TextInputEditText>(R.id.logInEmail)
+        LogIn_password = findViewById<TextInputEditText>(R.id.logInPassword)
+        LogIn_btn = findViewById<Button>(R.id.login_btn1)
+        LogIn_btn!!.setOnClickListener(View.OnClickListener {
             val email: String
-            mAuth = FirebaseAuth.getInstance()
-            email = editTextemail!!.getText().toString()
-            password = editTextpassword!!.getText().toString()
+            val password: String
+            email = LogIn_email!!.getText().toString()
+            password = LogIn_password!!.getText().toString()
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(baseContext, "missing email or password", Toast.LENGTH_LONG).show()
-                return@OnClickListener
+                Toast.makeText(
+                    baseContext,
+                    "the password or email you insert is not valid",
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
-                mAuth!!.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Toast.makeText(
-                                this@LoginActivity, "user has been authenticated",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            Toast.makeText(
-                                this@LoginActivity, "Authentication failed.",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                Model.instance().login(email, password, object : Model.Listener<String?> {
+                    override fun onComplete(isValid: String?) {
+                        if (!isValid.isNullOrEmpty() && isValid.contains(email)) {
+                            Toast.makeText(this@LogInActivity, " not null", Toast.LENGTH_SHORT).show()
+                        }
+                        if (isValid == email) {
+                            Toast.makeText(this@LogInActivity, "user has been registered", Toast.LENGTH_SHORT).show()
+                            i = Intent(applicationContext, MainActivity::class.java)
+                            startActivity(i)
                         }
                     }
+                })
             }
         })
     }
