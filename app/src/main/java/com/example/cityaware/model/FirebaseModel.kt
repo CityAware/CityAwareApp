@@ -56,4 +56,13 @@ class FirebaseModel internal constructor() {
                 .addOnSuccessListener { uri -> listener.onComplete(uri.toString()) }
         }
     }
+    fun signUp(email: String?, password: String?, listener: Model.Listener<Boolean?>) {
+        auth.createUserWithEmailAndPassword(email!!, password!!).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                listener.onComplete(true)
+            } else {
+                listener.onComplete(false)
+            }
+        }
+    }
 }

@@ -19,7 +19,7 @@ class Model private constructor() {
     }
 
     fun getAllPosts(callback: Listener<List<Post?>?>?) {
-        firebaseModel.getAllPosts(callback)
+        (callback as Listener<List<Post>?>?)?.let { firebaseModel.getAllPosts(it) }
         //        executor.execute(()->{
 //            List<Post> data = localDb.studentDao().getAll();
 //            try {
@@ -54,6 +54,9 @@ class Model private constructor() {
 
     fun uploadImage(name: String?, bitmap: Bitmap?, listener: Listener<String?>?) {
         listener?.let { bitmap?.let { it1 -> name?.let { it2 -> firebaseModel.uploadImage(it2, it1, it) } } }
+    }
+    fun signUp(email: String?, password: String?, listener: (Any) -> Unit) {
+        firebaseModel.signUp(email, password, listener!!)
     }
 
     companion object {
