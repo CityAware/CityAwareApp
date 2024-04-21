@@ -38,7 +38,6 @@ class SignUpActivity : AppCompatActivity() {
         editTextEmail = findViewById(R.id.email)
         editTextPassword = findViewById(R.id.password)
         editTextPassword!!.setTransformationMethod(PasswordTransformationMethod())
-        editTextAccLabel = findViewById(R.id.AccLabel)
         LabelChecker()
         errorTV = findViewById(R.id.signup_error)
         loaderIV = findViewById(R.id.loading_spinner)

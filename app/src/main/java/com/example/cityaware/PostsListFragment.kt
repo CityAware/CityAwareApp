@@ -14,11 +14,12 @@ import androidx.navigation.NavDirections
 import androidx.navigation.Navigation.createNavigateOnClickListener
 import androidx.navigation.Navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.cityaware.model.Post
+import com.example.cityaware.PostsListFragmentViewModel
 import com.example.cityaware.databinding.FragmentPostsListBinding
 import com.example.cityaware.model.Model
+import com.example.cityaware.model.Post
 
-import com.example.cityaware.PostsListFragmentViewModel
+
 class PostsListFragment : Fragment() {
     var binding: FragmentPostsListBinding? = null
     var adapter: PostRecyclerAdapter? = null
@@ -29,18 +30,18 @@ class PostsListFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentPostsListBinding.inflate(inflater, container, false)
-        val view: View = binding.getRoot()
-        binding.recyclerView.setHasFixedSize(true)
-        binding.recyclerView.setLayoutManager(LinearLayoutManager(context))
+        val view: View = binding!!.getRoot()
+        binding!!.recyclerView.setHasFixedSize(true)
+        binding!!.recyclerView.setLayoutManager(LinearLayoutManager(context))
         adapter = PostRecyclerAdapter(getLayoutInflater(), viewModel.getData())
-        binding.recyclerView.setAdapter(adapter)
+        binding!!.recyclerView.setAdapter(adapter)
         adapter!!.setOnItemClickListener(object : PostRecyclerAdapter.OnItemClickListener {
             override fun onItemClick(pos: Int) {
                 Log.d("TAG", "Row was clicked $pos")
                 val st: Post = viewModel.getData().get(pos)
                 val action: PostsListFragmentDirections.ActionPostsListFragmentToBlueFragment =
                     PostsListFragmentDirections.actionPostsListFragmentToBlueFragment(st.title)
-                findNavController(view).navigate(action)
+                findNavController(view).navigate((action as NavDirections))
             }
         })
         val addButton = view.findViewById<View>(R.id.btnAdd)
@@ -51,7 +52,9 @@ class PostsListFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        viewModel = ViewModelProvider(this)[PostsListFragmentViewModel::class.java]
+        viewModel = ViewModelProvider(this).get(
+            PostsListFragmentViewModel::class.java
+        )
     }
 
     override fun onResume() {
@@ -60,12 +63,11 @@ class PostsListFragment : Fragment() {
     }
 
     fun reloadData() {
-
-        binding!!.progressBar.setVisibility(View.VISIBLE)
-        Model.instance().getAllPosts { stList ->
-            viewModel!!.setData(stList)
+        binding!!.progressBar.visibility = View.VISIBLE
+        Model.instance().getAllPosts({ stList ->
+            viewModel.setData(stList)
             adapter!!.setData(viewModel.getData())
-            binding.progressBar.setVisibility(View.GONE)
-        }
+            binding!!.progressBar.visibility = View.GONE
+        })
     }
 }

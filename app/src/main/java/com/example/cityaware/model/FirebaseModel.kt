@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.util.Pair
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.storage.FirebaseStorage
@@ -15,6 +16,7 @@ class FirebaseModel internal constructor() {
     var db: FirebaseFirestore
     var storage: FirebaseStorage
     var auth: FirebaseAuth
+    var CurrUser: FirebaseUser? = null
 
     init {
         db = FirebaseFirestore.getInstance()
@@ -134,13 +136,13 @@ class FirebaseModel internal constructor() {
             }
     }
 
-    fun login(email: String?, password: String?, listener: Model.Listener<String?>) {
+    fun login(email: String?, password: String?, listener: Model.Listener<Boolean?>) {
         auth.signInWithEmailAndPassword(email!!, password!!).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val currUser = auth.currentUser
-                listener.onComplete(currUser!!.uid)
+                listener.onComplete(true)
             } else {
-                listener.onComplete(null)
+                listener.onComplete(false)
             }
         }
     }
