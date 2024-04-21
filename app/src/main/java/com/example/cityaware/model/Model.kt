@@ -2,11 +2,11 @@ package com.example.cityaware.model;
 
 import android.graphics.Bitmap
 import android.os.Looper
+import android.util.Pair
 import androidx.core.os.HandlerCompat
 import com.example.cityaware.model.AppLocalDb.appDb
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-
 
 class Model private constructor() {
     private val executor: Executor = Executors.newSingleThreadExecutor()
@@ -55,8 +55,13 @@ class Model private constructor() {
     fun uploadImage(name: String?, bitmap: Bitmap?, listener: Listener<String?>?) {
         listener?.let { bitmap?.let { it1 -> name?.let { it2 -> firebaseModel.uploadImage(it2, it1, it) } } }
     }
-    fun signUp(email: String?, password: String?, listener: (Any) -> Unit) {
-        firebaseModel.signUp(email, password, listener)
+    fun signUp(
+        email: String?,
+        label: String?,
+        password: String?,
+        listener: Listener<Pair<Boolean?, String?>?>?
+    ) {
+        firebaseModel.signUp(email, label, password, listener)
     }
     fun login(email: String?, password: String?, listener: Listener<String?>?) {
         firebaseModel.login(email, password, listener!!)

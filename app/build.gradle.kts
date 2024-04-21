@@ -4,7 +4,7 @@ plugins {
 
 
     id("com.google.gms.google-services")
-   
+
 
 
 
@@ -72,6 +72,7 @@ dependencies {
     implementation ("com.squareup.picasso:picasso:2.8")
 
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    implementation ("com.google.firebase:firebase-database:20.1.0")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
     implementation ("com.google.firebase:firebase-auth:21.0.2")
     implementation ("com.google.android.gms:play-services-maps:18.0.2")

@@ -1,8 +1,9 @@
 package com.example.cityaware.model;
 
-
 import android.graphics.Bitmap
+import android.util.Pair
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.storage.FirebaseStorage
@@ -56,15 +57,83 @@ class FirebaseModel internal constructor() {
                 .addOnSuccessListener { uri -> listener.onComplete(uri.toString()) }
         }
     }
-    fun signUp(email: String?, password: String?, listener: (Any) -> Unit) {
-        auth.createUserWithEmailAndPassword(email!!, password!!).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                listener.onComplete(true)
-            } else {
-                listener.onComplete(false)
+
+    /*public void signUp(String email,String label, String password, Model.Listener<Boolean> listener) {
+
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    listener.onComplete(true);
+                }
+                else{listener.onComplete(false);}
             }
-        }
+        });
+    }*/
+    fun signUp(
+        email: String?,
+        label: String?,
+        password: String?,
+        listener: Model.Listener<Pair<Boolean, String>?>
+    ) {
+        db.collection(User.COLLECTION).whereEqualTo(User.ACCOUNT_LABEL, label).get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    if (task.result.isEmpty) {
+                        auth.createUserWithEmailAndPassword(email!!, password!!)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Add the new user to the database
+                                    val user = User(email, label)
+                                    db.collection(User.COLLECTION)
+                                        .add(user.toJson()).addOnCompleteListener {
+                                            listener.onComplete(
+                                                Pair(
+                                                    true,
+                                                    "Sign up success"
+                                                )
+                                            )
+                                        }
+                                } else {
+                                    val exception = task.exception
+                                    if (exception is FirebaseAuthUserCollisionException) {
+                                        // Email already exists
+                                        listener.onComplete(
+                                            Pair(
+                                                false,
+                                                "Email already exists"
+                                            )
+                                        )
+                                    } else {
+                                        // Other error like connection issue or password under 6 characters / invalid characters
+                                        listener.onComplete(
+                                            Pair(
+                                                false,
+                                                "Sign up failed"
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                    } else {
+                        listener.onComplete(
+                            Pair(
+                                false,
+                                "Label is taken"
+                            )
+                        )
+                    }
+                } else {
+                    listener.onComplete(
+                        Pair(
+                            false,
+                            "Error checking for unique label"
+                        )
+                    )
+                }
+            }
     }
+
     fun login(email: String?, password: String?, listener: Model.Listener<String?>) {
         auth.signInWithEmailAndPassword(email!!, password!!).addOnCompleteListener { task ->
             if (task.isSuccessful) {

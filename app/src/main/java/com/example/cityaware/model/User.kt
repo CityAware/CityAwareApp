@@ -1,3 +1,5 @@
+package com.example.cityaware.model
+
 
 class User {
     var email: String? = ""
@@ -21,10 +23,8 @@ class User {
         const val ACCOUNT_LABEL = "label"
         const val COLLECTION = "users"
         fun fromJson(json: Map<String?, Any?>): User {
-            val email =
-                json[EMAIL] as String?
-            val label =
-                json[ACCOUNT_LABEL] as String?
+            val email = json[EMAIL] as String?
+            val label = json[ACCOUNT_LABEL] as String?
             return User(email, label)
         }
     }
