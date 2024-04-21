@@ -56,12 +56,22 @@ class FirebaseModel internal constructor() {
                 .addOnSuccessListener { uri -> listener.onComplete(uri.toString()) }
         }
     }
-    fun signUp(email: String?, password: String?, listener: Model.Listener<Boolean?>) {
+    fun signUp(email: String?, password: String?, listener: (Any) -> Unit) {
         auth.createUserWithEmailAndPassword(email!!, password!!).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 listener.onComplete(true)
             } else {
                 listener.onComplete(false)
+            }
+        }
+    }
+    fun login(email: String?, password: String?, listener: Model.Listener<String?>) {
+        auth.signInWithEmailAndPassword(email!!, password!!).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val currUser = auth.currentUser
+                listener.onComplete(currUser!!.uid)
+            } else {
+                listener.onComplete(null)
             }
         }
     }

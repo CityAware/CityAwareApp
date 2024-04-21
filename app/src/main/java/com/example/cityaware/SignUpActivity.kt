@@ -1,5 +1,7 @@
 package com.example.cityaware
 
+
+import com.example.cityaware.R;
 import android.content.Intent
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
@@ -7,8 +9,6 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-
-
 import com.example.cityaware.model.Model
 import com.google.android.material.textfield.TextInputEditText
 
@@ -42,10 +42,7 @@ class SignUpActivity : AppCompatActivity() {
                             "user has been authenticated",
                             Toast.LENGTH_SHORT
                         ).show()
-                        i = Intent(
-                            applicationContext,
-                            MainActivity::class.java
-                        )
+                        i = Intent(applicationContext, MainActivity::class.java)
                         startActivity(i)
                         return@signUp
                     } else {
@@ -56,7 +53,6 @@ class SignUpActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
-                //
             }
         })
     }

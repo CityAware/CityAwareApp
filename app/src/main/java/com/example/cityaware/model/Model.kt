@@ -56,7 +56,10 @@ class Model private constructor() {
         listener?.let { bitmap?.let { it1 -> name?.let { it2 -> firebaseModel.uploadImage(it2, it1, it) } } }
     }
     fun signUp(email: String?, password: String?, listener: (Any) -> Unit) {
-        firebaseModel.signUp(email, password, listener!!)
+        firebaseModel.signUp(email, password, listener)
+    }
+    fun login(email: String?, password: String?, listener: Listener<String?>?) {
+        firebaseModel.login(email, password, listener!!)
     }
 
     companion object {
