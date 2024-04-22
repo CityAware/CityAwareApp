@@ -6,7 +6,6 @@ import androidx.core.os.HandlerCompat
 import com.example.cityaware.model.AppLocalDb.appDb
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-
 class Model private constructor() {
     private val executor: Executor = Executors.newSingleThreadExecutor()
     private val mainHandler = HandlerCompat.createAsync(Looper.getMainLooper())
@@ -52,10 +51,18 @@ class Model private constructor() {
     }
 
     fun uploadImage(name: String?, bitmap: Bitmap?, listener: Listener<String?>?) {
-        listener?.let { bitmap?.let { it1 -> name?.let { it2 -> firebaseModel.uploadImage(it2, it1, it) } } }
+        listener?.let { val let =
+            bitmap?.let { it1 -> name?.let { it2 -> firebaseModel.uploadImage(it2, it1, it) } }
+            let
+        }
     }
-    fun signUp(email: String?, password: String?, listener: Listener<Boolean?>?) {
-        firebaseModel.signUp(email, password, listener!!)
+    fun signUp(
+        email: String?,
+        label: String?,
+        password: String?,
+        listener: Listener<kotlin.Pair<Boolean?, String?>?>
+    ) {
+        firebaseModel.signUp(email, label, password, listener)
     }
     fun login(email: String?, password: String?, listener: Listener<Boolean?>?) {
         firebaseModel.login(email, password, listener!!)

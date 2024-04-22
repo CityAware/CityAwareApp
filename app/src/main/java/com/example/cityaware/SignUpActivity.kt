@@ -37,12 +37,12 @@ class SignUpActivity : AppCompatActivity() {
         sp = getSharedPreferences("user", MODE_PRIVATE)
         editTextEmail = findViewById(R.id.email)
         editTextPassword = findViewById(R.id.password)
-        editTextPassword.setTransformationMethod(PasswordTransformationMethod())
+        editTextPassword!!.setTransformationMethod(PasswordTransformationMethod())
         editTextAccLabel = findViewById(R.id.AccLabel)
         LabelChecker()
         errorTV = findViewById(R.id.signup_error)
         loaderIV = findViewById(R.id.loading_spinner)
-        loaderIV.setVisibility(View.GONE)
+        loaderIV!!.setVisibility(View.GONE)
         signUpBtn = findViewById(R.id.signUpBtn)
         SignUpListener()
     }
@@ -76,33 +76,35 @@ class SignUpActivity : AppCompatActivity() {
                     animation.setRepeatCount(Animation.INFINITE)
                     loaderIV!!.startAnimation(animation)
                 }
-                Model.instance().signUp(email, label, password, { result ->
-                    if (result.first) {
-                        // Sign up success, update UI with the signed-in user's information
-                        Toast.makeText(this@SignUpActivity, result.second, Toast.LENGTH_SHORT)
-                            .show()
-                        val editor = sp!!.edit()
-                        editor.putString("email", email)
-                        editor.putString("label", label)
-                        editor.putString("password", password)
-                        editor.apply()
-                        i = Intent(applicationContext, MainActivity::class.java)
-                        val bundle = ActivityOptionsCompat.makeCustomAnimation(
-                            applicationContext, android.R.anim.fade_in, android.R.anim.fade_out
-                        )
-                            .toBundle()
-                        startActivity(i, bundle)
-                        finish()
-                    } else {
-                        errorTV.setText(result.second)
-                        Toast.makeText(this@SignUpActivity, result.second, Toast.LENGTH_SHORT)
-                            .show()
+                Model.instance().signUp(email, label, password, object : Model.Listener<Pair<Boolean?, String?>?> {
+                    override fun onComplete(result: Pair<Boolean?, String?>?) {
+                        if (result?.first == true) {
+                            // Sign up success, update UI with the signed-in user's information
+                            Toast.makeText(this@SignUpActivity, result.second, Toast.LENGTH_SHORT)
+                                .show()
+                            val editor = sp!!.edit()
+                            editor.putString("email", email)
+                            editor.putString("label", label)
+                            editor.putString("password", password)
+                            editor.apply()
+                            i = Intent(applicationContext, MainActivity::class.java)
+                            val bundle = ActivityOptionsCompat.makeCustomAnimation(
+                                applicationContext, android.R.anim.fade_in, android.R.anim.fade_out
+                            )
+                                .toBundle()
+                            startActivity(i, bundle)
+                            finish()
+                        } else {
+                            errorTV!!.setText(result?.second ?: "")
+                            Toast.makeText(this@SignUpActivity, result?.second, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        loaderIV!!.post {
+                            loaderIV!!.clearAnimation()
+                            loaderIV!!.setVisibility(View.GONE)
+                        }
+                        signUpBtn!!.isClickable = true
                     }
-                    loaderIV!!.post {
-                        loaderIV!!.clearAnimation()
-                        loaderIV!!.setVisibility(View.GONE)
-                    }
-                    signUpBtn!!.isClickable = true
                 })
             }
         }

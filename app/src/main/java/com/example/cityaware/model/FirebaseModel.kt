@@ -76,7 +76,7 @@ class FirebaseModel internal constructor() {
         email: String?,
         label: String?,
         password: String?,
-        listener: Model.Listener<Pair<Boolean, String>?>
+        listener: Model.Listener<kotlin.Pair<Boolean?, String?>?>
     ) {
         db.collection(User.COLLECTION).whereEqualTo(User.ACCOUNT_LABEL, label).get()
             .addOnCompleteListener { task ->
