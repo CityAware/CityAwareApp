@@ -139,7 +139,7 @@ class FirebaseModel internal constructor() {
     fun login(email: String?, password: String?, listener: Model.Listener<Boolean?>) {
         auth.signInWithEmailAndPassword(email!!, password!!).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                CurrUser = auth.currentUser
+                val currUser = auth.currentUser
                 listener.onComplete(true)
             } else {
                 listener.onComplete(false)

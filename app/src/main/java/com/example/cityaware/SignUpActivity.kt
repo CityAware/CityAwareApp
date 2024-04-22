@@ -1,5 +1,6 @@
 package com.example.cityaware
 
+
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -36,12 +37,12 @@ class SignUpActivity : AppCompatActivity() {
         sp = getSharedPreferences("user", MODE_PRIVATE)
         editTextEmail = findViewById(R.id.email)
         editTextPassword = findViewById(R.id.password)
-        editTextPassword!!.setTransformationMethod(PasswordTransformationMethod())
+        editTextPassword.setTransformationMethod(PasswordTransformationMethod())
         editTextAccLabel = findViewById(R.id.AccLabel)
         LabelChecker()
         errorTV = findViewById(R.id.signup_error)
         loaderIV = findViewById(R.id.loading_spinner)
-        loaderIV!!.setVisibility(View.GONE)
+        loaderIV.setVisibility(View.GONE)
         signUpBtn = findViewById(R.id.signUpBtn)
         SignUpListener()
     }
@@ -75,7 +76,7 @@ class SignUpActivity : AppCompatActivity() {
                     animation.setRepeatCount(Animation.INFINITE)
                     loaderIV!!.startAnimation(animation)
                 }
-                Model.instance().signUp(email, label, password) { result ->
+                Model.instance().signUp(email, label, password, { result ->
                     if (result.first) {
                         // Sign up success, update UI with the signed-in user's information
                         Toast.makeText(this@SignUpActivity, result.second, Toast.LENGTH_SHORT)
@@ -85,17 +86,11 @@ class SignUpActivity : AppCompatActivity() {
                         editor.putString("label", label)
                         editor.putString("password", password)
                         editor.apply()
-                        i = Intent(
-                            applicationContext,
-                            MainActivity::class.java
+                        i = Intent(applicationContext, MainActivity::class.java)
+                        val bundle = ActivityOptionsCompat.makeCustomAnimation(
+                            applicationContext, android.R.anim.fade_in, android.R.anim.fade_out
                         )
-                        val bundle =
-                            ActivityOptionsCompat.makeCustomAnimation(
-                                applicationContext,
-                                android.R.anim.fade_in,
-                                android.R.anim.fade_out
-                            )
-                                .toBundle()
+                            .toBundle()
                         startActivity(i, bundle)
                         finish()
                     } else {
@@ -108,7 +103,7 @@ class SignUpActivity : AppCompatActivity() {
                         loaderIV!!.setVisibility(View.GONE)
                     }
                     signUpBtn!!.isClickable = true
-                }
+                })
             }
         }
     }
