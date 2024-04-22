@@ -7,11 +7,11 @@ import android.content.Context
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        myContext = applicationContext
+        getMyContext = applicationContext
     }
 
     companion object {
-        var myContext: Context? = null
+        var getMyContext: Context? = null
             private set
     }
 }

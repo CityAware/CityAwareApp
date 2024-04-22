@@ -3,69 +3,65 @@ package com.example.cityaware.model;
 import android.graphics.Bitmap
 import android.os.Looper
 import androidx.core.os.HandlerCompat
-import com.example.cityaware.model.AppLocalDb.appDb
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+
 class Model private constructor() {
     private val executor: Executor = Executors.newSingleThreadExecutor()
     private val mainHandler = HandlerCompat.createAsync(Looper.getMainLooper())
-    private val firebaseModel: FirebaseModel = FirebaseModel()
-    var localDb = appDb
+    private val firebaseModel = FirebaseModel()
+    var localDb: AppLocalDbRepository = AppLocalDb.getAppDb
+    fun signOut() {
+        firebaseModel.signOut()
+    }
 
     interface Listener<T> {
         fun onComplete(data: T)
     }
 
+    val auth: FirebaseAuth
+        get() = firebaseModel.auth
+
+    fun getUserPosts(label: String?, callback: Listener<List<Post?>?>?) {
+        firebaseModel.getUserPosts(label, callback)
+    }
+
     fun getAllPosts(callback: Listener<List<Post?>?>?) {
-        (callback as Listener<List<Post>?>?)?.let { firebaseModel.getAllPosts(it) }
-        //        executor.execute(()->{
-//            List<Post> data = localDb.studentDao().getAll();
-//            try {
-//                Thread.sleep(5000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            mainHandler.post(()->{
-//                callback.onComplete(data);
-//            });
-//        });
+        firebaseModel.getAllPosts(callback)
     }
 
     fun addPost(st: Post?, listener: Listener<Void?>?) {
-        if (listener != null) {
-            if (st != null) {
-                firebaseModel.addPost(st, listener)
-            }
-        }
-        //        executor.execute(()->{
-//            localDb.PostDao().insertAll(st);
-//            try {
-//                Thread.sleep(5000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            mainHandler.post(()->{
-//                listener.onComplete();
-//            });
-//        });
+        firebaseModel.addPost(st!!, listener!!)
     }
 
     fun uploadImage(name: String?, bitmap: Bitmap?, listener: Listener<String?>?) {
-        listener?.let { val let =
-            bitmap?.let { it1 -> name?.let { it2 -> firebaseModel.uploadImage(it2, it1, it) } }
-            let
-        }
+        firebaseModel.uploadImage(name!!, bitmap!!, listener!!)
     }
+
     fun signUp(
         email: String?,
         label: String?,
         password: String?,
-        listener: Listener<kotlin.Pair<Boolean?, String?>?>
+        listener: Listener<android.util.Pair<Boolean?, String?>?>
     ) {
-        firebaseModel.signUp(email, label, password, listener)
+        firebaseModel.signUp(email, label, password, listener!!)
     }
-    fun login(email: String?, password: String?, listener: Listener<Boolean?>?) {
+
+    fun login(email: String?, password: String?, listener: Listener<android.util.Pair<Boolean?, String?>?>) {
         firebaseModel.login(email, password, listener!!)
+    }
+
+    fun getPostById(id: String?, listener: Listener<Post?>?) {
+        firebaseModel.getPostById(id, listener!!)
+    }
+
+    val db: FirebaseFirestore
+        get() = firebaseModel.getDb()
+
+    fun updatePostById(id: String?, updates: Map<String?, Any?>?) {
+        firebaseModel.updatePostByid(id, updates!!)
     }
 
     companion object {
@@ -75,3 +71,4 @@ class Model private constructor() {
         }
     }
 }
+

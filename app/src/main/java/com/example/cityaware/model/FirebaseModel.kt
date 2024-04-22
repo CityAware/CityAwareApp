@@ -1,6 +1,7 @@
 package com.example.cityaware.model;
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.util.Pair
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -9,6 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.storage.FirebaseStorage
 import java.io.ByteArrayOutputStream
+import java.util.Collections
 import java.util.LinkedList
 
 
@@ -28,23 +30,78 @@ class FirebaseModel internal constructor() {
         auth = FirebaseAuth.getInstance()
     }
 
-    fun getAllPosts(callback: Model.Listener<List<Post>?>) {
+    fun getDb(): FirebaseFirestore {
+        return db
+    }
+    fun getAllPosts(callback: Model.Listener<List<Post?>?>?) {
         db.collection(Post.COLLECTION).get().addOnCompleteListener { task ->
             val list: MutableList<Post> = LinkedList()
             if (task.isSuccessful) {
                 val jsonsList = task.result
-                for (json in jsonsList) {
-                    val post = Post.fromJson(json.data)
+                for (json in jsonsList!!) {
+                    val post = Post.fromJson(json.data!!)
                     list.add(post)
                 }
             }
-            callback.onComplete(list)
+            if (list.isNotEmpty()) {
+                Collections.sort(list,
+                    Comparator { p1, p2 ->
+                        p2.getTimestamp()?.let {
+                            java.lang.Long.compare(
+                                it,
+                                p1.getTimestamp()!!
+                            )
+                        }!!
+                    })
+            }
+            callback!!.onComplete(list)
         }
     }
 
     fun addPost(post: Post, listener: Model.Listener<Void?>) {
-        db.collection(Post.COLLECTION).document(post.id).set(post.toJson())
+        db.collection(Post.COLLECTION).document(post.getId()).set(post.toJson())
             .addOnCompleteListener { listener.onComplete(null) }
+    }
+
+    fun getPostById(id: String?, listener: Model.Listener<Post?>) {
+        db.collection(Post.COLLECTION).whereEqualTo(Post.ID, id).get()
+            .addOnCompleteListener { task ->
+                var post = Post()
+                if (task.isSuccessful) {
+                    val jsonsList = task.result
+                    for (json in jsonsList) {
+                        post = Post.fromJson(json.data)
+                    }
+                }
+                listener.onComplete(post)
+            }
+    }
+
+    fun updatePostByid(id: String?, updates: Map<String?, Any?>) {
+        val db = FirebaseFirestore.getInstance()
+        Log.d("map", updates.toString())
+        val collRef = db.collection("posts")
+        collRef.whereEqualTo("id", id)
+            .get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+                for (documentSnapshot in queryDocumentSnapshots) {
+                    val docRef = documentSnapshot.reference
+                    docRef.update(updates)
+                        .addOnSuccessListener {
+                            Log.d(
+                                "TAG1",
+                                "DocumentSnapshot successfully updated!"
+                            )
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w(
+                                "TAG2",
+                                "Error updating document",
+                                e
+                            )
+                        }
+                }
+            }
     }
 
     fun uploadImage(name: String, bitmap: Bitmap, listener: Model.Listener<String?>) {
@@ -60,23 +117,11 @@ class FirebaseModel internal constructor() {
         }
     }
 
-    /*public void signUp(String email,String label, String password, Model.Listener<Boolean> listener) {
-
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    listener.onComplete(true);
-                }
-                else{listener.onComplete(false);}
-            }
-        });
-    }*/
     fun signUp(
         email: String?,
         label: String?,
         password: String?,
-        listener: Model.Listener<kotlin.Pair<Boolean?, String?>?>
+        listener: Model.Listener<Pair<Boolean?, String?>?>
     ) {
         db.collection(User.COLLECTION).whereEqualTo(User.ACCOUNT_LABEL, label).get()
             .addOnCompleteListener { task ->
@@ -87,13 +132,10 @@ class FirebaseModel internal constructor() {
                                 if (task.isSuccessful) {
                                     // Add the new user to the database
                                     val user = User(email, label)
-                                    db.collection(User.COLLECTION)
-                                        .add(user.toJson()).addOnCompleteListener {
+                                    db.collection(User.COLLECTION).add(user.toJson())
+                                        .addOnCompleteListener {
                                             listener.onComplete(
-                                                Pair(
-                                                    true,
-                                                    "Sign up success"
-                                                )
+                                                Pair(true, "Sign up success")
                                             )
                                         }
                                 } else {
@@ -118,12 +160,7 @@ class FirebaseModel internal constructor() {
                                 }
                             }
                     } else {
-                        listener.onComplete(
-                            Pair(
-                                false,
-                                "Label is taken"
-                            )
-                        )
+                        listener.onComplete(Pair(false, "Label is taken"))
                     }
                 } else {
                     listener.onComplete(
@@ -136,14 +173,49 @@ class FirebaseModel internal constructor() {
             }
     }
 
-    fun login(email: String?, password: String?, listener: Model.Listener<Boolean?>) {
+    fun login(
+        email: String?,
+        password: String?,
+        listener: Model.Listener<Pair<Boolean?, String?>?>
+    ) {
         auth.signInWithEmailAndPassword(email!!, password!!).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val currUser = auth.currentUser
-                listener.onComplete(true)
+                CurrUser = auth.currentUser
+                listener.onComplete(Pair(true, "Logged in successfully"))
             } else {
-                listener.onComplete(false)
+                listener.onComplete(Pair(false, "Login failed"))
             }
         }
     }
+
+    fun getUserPosts(label: String?, callback: Model.Listener<List<Post?>?>?) {
+        db.collection(Post.COLLECTION)
+            .whereEqualTo("label", label)
+            .get()
+            .addOnCompleteListener { task ->
+                val list: MutableList<Post> = LinkedList()
+                if (task.isSuccessful) {
+                    val jsonsList = task.result
+                    for (json in jsonsList!!) {
+                        val post = Post.fromJson(json.data!!)
+                        list.add(post)
+                    }
+                }
+                if (list.isNotEmpty()) {
+                    Collections.sort(list,
+                        Comparator { p1, p2 ->
+                            java.lang.Long.compare(
+                                p2.getTimestamp()!!,
+                                p1.getTimestamp()!!
+                            )
+                        })
+                }
+                callback!!.onComplete(list)
+            }
+    }
+
+    fun signOut() {
+        auth.signOut()
+    }
 }
+
