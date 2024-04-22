@@ -1,6 +1,5 @@
 package com.example.cityaware
 
-
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -38,6 +37,7 @@ class SignUpActivity : AppCompatActivity() {
         editTextEmail = findViewById(R.id.email)
         editTextPassword = findViewById(R.id.password)
         editTextPassword!!.setTransformationMethod(PasswordTransformationMethod())
+        editTextAccLabel = findViewById(R.id.AccLabel)
         LabelChecker()
         errorTV = findViewById(R.id.signup_error)
         loaderIV = findViewById(R.id.loading_spinner)
@@ -75,39 +75,40 @@ class SignUpActivity : AppCompatActivity() {
                     animation.setRepeatCount(Animation.INFINITE)
                     loaderIV!!.startAnimation(animation)
                 }
-                Model.instance().signUp(email, label, password, object : Model.Listener<android.util.Pair<Boolean?, String?>?> {
-                    override fun onComplete(result: android.util.Pair<Boolean?, String?>?) {
-                        if (result?.first == true) {
-                            // Sign up success, update UI with the signed-in user's information
-                            Toast.makeText(
-                                this@SignUpActivity,
-                                result.second,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            val editor = sp!!.edit()
-                            editor.putString("email", email)
-                            editor.putString("label", label)
-                            editor.putString("password", password)
-                            editor.apply()
-                            i = Intent(applicationContext, MainActivity::class.java)
-                            val bundle = ActivityOptionsCompat.makeCustomAnimation(
-                                applicationContext, android.R.anim.fade_in, android.R.anim.fade_out
+                Model.instance().signUp(email, label, password) { result ->
+                    if (result.first) {
+                        // Sign up success, update UI with the signed-in user's information
+                        Toast.makeText(this@SignUpActivity, result.second, Toast.LENGTH_SHORT)
+                            .show()
+                        val editor = sp!!.edit()
+                        editor.putString("email", email)
+                        editor.putString("label", label)
+                        editor.putString("password", password)
+                        editor.apply()
+                        i = Intent(
+                            applicationContext,
+                            MainActivity::class.java
+                        )
+                        val bundle =
+                            ActivityOptionsCompat.makeCustomAnimation(
+                                applicationContext,
+                                android.R.anim.fade_in,
+                                android.R.anim.fade_out
                             )
                                 .toBundle()
-                            startActivity(i, bundle)
-                            finish()
-                        } else {
-                            errorTV!!.setText(result!!.second)
-                            Toast.makeText(this@SignUpActivity, result.second, Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                        loaderIV!!.post {
-                            loaderIV!!.clearAnimation()
-                            loaderIV!!.setVisibility(View.GONE)
-                        }
-                        signUpBtn!!.isClickable = true
+                        startActivity(i, bundle)
+                        finish()
+                    } else {
+                        errorTV.setText(result.second)
+                        Toast.makeText(this@SignUpActivity, result.second, Toast.LENGTH_SHORT)
+                            .show()
                     }
-                })
+                    loaderIV!!.post {
+                        loaderIV!!.clearAnimation()
+                        loaderIV!!.setVisibility(View.GONE)
+                    }
+                    signUpBtn!!.isClickable = true
+                }
             }
         }
     }
