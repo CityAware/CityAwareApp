@@ -44,13 +44,13 @@ class Model private constructor() {
         email: String?,
         label: String?,
         password: String?,
-        listener: Listener<android.util.Pair<Boolean?, String?>?>
+        listener: Listener<kotlin.Pair<Boolean?, String?>?>
     ) {
         firebaseModel.signUp(email, label, password, listener!!)
     }
 
-    fun login(email: String?, password: String?, listener: Listener<android.util.Pair<Boolean?, String?>?>) {
-        firebaseModel.login(email, password, listener!!)
+    fun login(email: String?, password: String?, listener: Listener<kotlin.Pair<Boolean?, String?>?>) {
+        firebaseModel.login(email, password, listener)
     }
 
     fun getPostById(id: String?, listener: Listener<Post?>?) {
@@ -58,8 +58,7 @@ class Model private constructor() {
     }
 
     val db: FirebaseFirestore
-        get() = firebaseModel.getDb()
-
+        get() = firebaseModel.db
     fun updatePostById(id: String?, updates: Map<String?, Any?>?) {
         firebaseModel.updatePostByid(id, updates!!)
     }

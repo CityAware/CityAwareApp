@@ -2,7 +2,7 @@ package com.example.cityaware.model;
 
 import android.graphics.Bitmap
 import android.util.Log
-import android.util.Pair
+import kotlin.Pair
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
@@ -30,9 +30,7 @@ class FirebaseModel internal constructor() {
         auth = FirebaseAuth.getInstance()
     }
 
-    fun getDb(): FirebaseFirestore {
-        return db
-    }
+
     fun getAllPosts(callback: Model.Listener<List<Post?>?>?) {
         db.collection(Post.COLLECTION).get().addOnCompleteListener { task ->
             val list: MutableList<Post> = LinkedList()
@@ -46,10 +44,10 @@ class FirebaseModel internal constructor() {
             if (list.isNotEmpty()) {
                 Collections.sort(list,
                     Comparator { p1, p2 ->
-                        p2.getTimestamp()?.let {
+                        p2.timestamp?.let {
                             java.lang.Long.compare(
                                 it,
-                                p1.getTimestamp()!!
+                                p1.timestamp!!
                             )
                         }!!
                     })
@@ -59,7 +57,7 @@ class FirebaseModel internal constructor() {
     }
 
     fun addPost(post: Post, listener: Model.Listener<Void?>) {
-        db.collection(Post.COLLECTION).document(post.getId()).set(post.toJson())
+        db.collection(Post.COLLECTION).document(post.id).set(post.toJson())
             .addOnCompleteListener { listener.onComplete(null) }
     }
 
@@ -205,8 +203,8 @@ class FirebaseModel internal constructor() {
                     Collections.sort(list,
                         Comparator { p1, p2 ->
                             java.lang.Long.compare(
-                                p2.getTimestamp()!!,
-                                p1.getTimestamp()!!
+                                p2.timestamp!!,
+                                p1.timestamp!!
                             )
                         })
                 }

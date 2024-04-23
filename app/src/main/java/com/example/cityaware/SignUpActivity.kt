@@ -77,10 +77,11 @@ class SignUpActivity : AppCompatActivity() {
                     loaderIV!!.startAnimation(animation)
                 }
                 Model.instance().signUp(email, label, password, object : Model.Listener<Pair<Boolean?, String?>?> {
-                    override fun onComplete(result: Pair<Boolean?, String?>?) {
-                        if (result?.first == true) {
-                            // Sign up success, update UI with the signed-in user's information
-                            Toast.makeText(this@SignUpActivity, result.second, Toast.LENGTH_SHORT)
+                    override fun onComplete(data: Pair<Boolean?, String?>?) {
+                        val isValid = data?.first
+                        if (isValid == true) {
+                            //    Sign up success, update UI with the signed-in user's information
+                            Toast.makeText(this@SignUpActivity, data.second, Toast.LENGTH_SHORT)
                                 .show()
                             val editor = sp!!.edit()
                             editor.putString("email", email)
@@ -95,8 +96,8 @@ class SignUpActivity : AppCompatActivity() {
                             startActivity(i, bundle)
                             finish()
                         } else {
-                            errorTV!!.setText(result?.second ?: "")
-                            Toast.makeText(this@SignUpActivity, result?.second, Toast.LENGTH_SHORT)
+                            errorTV!!.setText(data?.second ?: "")
+                            Toast.makeText(this@SignUpActivity, data?.second, Toast.LENGTH_SHORT)
                                 .show()
                         }
                         loaderIV!!.post {

@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.cityaware.model.Model
 import com.google.android.material.textfield.TextInputEditText
+import com.example.cityaware.model.Model.Listener
 
 
 class LogInActivity : AppCompatActivity() {
@@ -34,8 +35,9 @@ class LogInActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             } else {
-                Model.instance().login(email, password, object : Model.Listener<Boolean?> {
-                    override fun onComplete(isValid: Boolean?) {
+                Model.instance().login(email, password,object: Model.Listener<Pair<Boolean?,String?>?> {
+                    override fun onComplete(data: Pair<Boolean?, String?>?) {
+                        val isValid = data?.first
                         if (isValid == false) {
                             Toast.makeText(this@LogInActivity, "user not exist", Toast.LENGTH_SHORT)
                                 .show()

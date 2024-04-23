@@ -51,10 +51,4 @@ class Post {
         }
     }
 
-    fun getTimestamp(): Long? {
-        return timestamp
-    }
-    fun getId(): String {
-        return id
-    }
 }
