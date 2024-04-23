@@ -96,12 +96,7 @@ class PostFragment : Fragment() {
         return view
     }
 
-    fun setTitle(title: String?) {
-        this.title = title
-        if (titleTv != null) {
-            titleTv!!.text = title
-        }
-    }
+
 
 //    override fun onStart() {
 //        super.onStart()

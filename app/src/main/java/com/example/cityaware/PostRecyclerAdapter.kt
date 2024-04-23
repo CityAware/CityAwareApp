@@ -51,10 +51,7 @@ class PostRecyclerAdapter(var inflater: LayoutInflater, var data: List<Post>) :
         fun onItemClick(pos: Int)
     }
 
-    fun setData(data: List<Post>) {
-        this.data = data
-        notifyDataSetChanged()
-    }
+
 
     fun setOnItemClickListener(listener: OnItemClickListener?) {
         this.listener = listener

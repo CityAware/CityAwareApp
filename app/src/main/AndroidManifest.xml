@@ -34,7 +34,7 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <activity
-            android:name=".LogInActivity"
+            android:name=".SignUpActivity"
             android:exported="true">
 
             <meta-data
@@ -48,7 +48,7 @@
 
         </activity>
         <activity
-            android:name=".SignUpActivity"
+            android:name=".LogInActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
