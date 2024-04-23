@@ -46,7 +46,7 @@ class Model private constructor() {
         password: String?,
         listener: Listener<kotlin.Pair<Boolean?, String?>?>
     ) {
-        firebaseModel.signUp(email, label, password, listener!!)
+        firebaseModel.signUp(email, label, password, listener)
     }
 
     fun login(email: String?, password: String?, listener: Listener<kotlin.Pair<Boolean?, String?>?>) {

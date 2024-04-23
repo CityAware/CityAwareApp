@@ -14,8 +14,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     var navController: NavController? = null
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -23,11 +21,10 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.main_navhost) as NavHostFragment?
         navController = navHostFragment!!.navController
         setupActionBarWithNavController(this, navController!!)
-
         val navView = findViewById<BottomNavigationView>(R.id.main_bottomNavigationView)
         setupWithNavController(navView, navController!!)
-
     }
+
     var fragmentMenuId = 0
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
@@ -37,7 +34,8 @@ class MainActivity : AppCompatActivity() {
         fragmentMenuId = 0
         return super.onCreateOptionsMenu(menu)
     }
-    override fun onOptionsItemSelected( item: MenuItem): Boolean {
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             navController!!.popBackStack()
         } else {

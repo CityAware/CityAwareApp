@@ -12,16 +12,28 @@ class Post {
     var title: String? = ""
     var imgUrl: String? = ""
     var details: String? = ""
-    var timestamp: Long? =null
+    var location: String? = ""
+    var label: String? = ""
+    var timestamp: Long? = null
 
     @Ignore
     constructor()
-    constructor(id: String, title: String?, imgUrl: String?, details: String?,timestamp:Long?) {
+    constructor(
+        id: String,
+        title: String?,
+        imgUrl: String?,
+        details: String?,
+        location: String?,
+        label: String?,
+        timestamp: Long?
+    ) {
         this.title = title
         this.id = id
         this.imgUrl = imgUrl
         this.details = details
-        this.timestamp=timestamp
+        this.location = location
+        this.label = label
+        this.timestamp = timestamp
     }
 
     fun toJson(): Map<String, Any?> {
@@ -30,25 +42,31 @@ class Post {
         json[TITLE] = title
         json[IMAGE] = imgUrl
         json[DETAILS] = details
+        json[LOCATION] = location
+        json[LABEL] = label
         json[TIMESTAMP] = timestamp
         return json
     }
 
     companion object {
         const val TITLE = "title"
+        const val LABEL = "label"
         const val ID = "id"
         const val IMAGE = "image"
         const val DETAILS = "details"
-        const val COLLECTION = "posts"
+        const val LOCATION = "location"
         const val TIMESTAMP = "timestamp"
+        const val COLLECTION = "posts"
         fun fromJson(json: Map<String?, Any?>): Post {
             val id = json[ID] as String?
+            val label = json[LABEL] as String?
             val name = json[TITLE] as String?
             val image = json[IMAGE] as String?
             val details = json[DETAILS] as String?
+            val location = json[LOCATION] as String?
             val timestamp = json[TIMESTAMP] as Long?
-            return Post(id!!, name, image, details,timestamp)
+            return Post(id!!, name, image, details, location, label, timestamp)
         }
     }
-
 }
+

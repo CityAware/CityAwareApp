@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/postsListFragment"
-        android:name="com.example.karenhub.PostsListFragment"
+        android:name="com.example.cityaware.PostsListFragment"
         android:label=""
         tools:layout="@layout/fragment_posts_list">
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/postFragment"
-        android:name="com.example.karenhub.PostFragment"
+        android:name="com.example.cityaware.PostFragment"
         android:label="Post info"
         tools:layout="@layout/fragment_post">
         <argument
@@ -43,7 +43,7 @@
     </fragment>
     <fragment
         android:id="@+id/addNewPostFragment"
-        android:name="com.example.karenhub.AddNewPostFragment"
+        android:name="com.example.cityaware.AddNewPostFragment"
         android:label=""
         tools:layout="@layout/fragment_add_post" >
         <action
@@ -59,7 +59,7 @@
     <action android:id="@+id/action_global_addPostFragment" app:destination="@id/addNewPostFragment" />
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="com.example.karenhub.MapsFragment"
+        android:name="com.example.cityaware.MapsFragment"
         android:label="@string/fragment_maps"
         tools:layout="@layout/fragment_maps">
         <action
@@ -72,7 +72,7 @@
     </fragment>
     <fragment
         android:id="@+id/editPostFragment"
-        android:name="com.example.karenhub.EditPostFragment"
+        android:name="com.example.cityaware.EditPostFragment"
         android:label="Edit Post"
         tools:layout="@layout/fragment_edit_post" >
         <action
@@ -102,7 +102,7 @@
     </fragment>
     <fragment
         android:id="@+id/userProfile"
-        android:name="com.example.karenhub.userProfile"
+        android:name="com.example.cityaware.userProfile"
         android:label=""
         tools:layout="@layout/fragment_user_profile" >
         <action
