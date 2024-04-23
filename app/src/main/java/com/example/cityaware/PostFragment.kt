@@ -14,7 +14,6 @@ import androidx.navigation.NavDirections
 import androidx.navigation.Navigation.findNavController
 import com.google.android.gms.maps.model.LatLng
 import com.squareup.picasso.Picasso
-import com.example.cityaware.R
 
 class PostFragment : Fragment() {
     var titleTv: TextView? = null
@@ -47,53 +46,53 @@ class PostFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val view: View = inflater.inflate(R.layout.fragment_post, container, false)
-        val button = view.findViewById<View>(R.id.editBtn_postFrag)
-        button.visibility = View.INVISIBLE
-        //show post details
-        title = PostFragmentArgs.fromBundle(arguments).getPostTitle()
-        details = PostFragmentArgs.fromBundle(arguments).getPostDetails()
-        location = PostFragmentArgs.fromBundle(arguments).getPostLocInfo()
-        imgUrl = PostFragmentArgs.fromBundle(arguments).getPostImgUrl()
-        label = PostFragmentArgs.fromBundle(arguments).getPostLabel()
-        id = PostFragmentArgs.fromBundle(arguments).getPostId()
-        val titleTv = view.findViewById<TextView>(R.id.postfrag_title_tv)
-        if (title != null) {
-            titleTv.text = title
-        }
-        detailsTv = view.findViewById<TextView>(R.id.postDetails_tv)
-        if (details != null) {
-            detailsTv!!.setText(details)
-        }
-        locationTV = view.findViewById<TextView>(R.id.postLocation)
-        if (location != null) {
-            locationTV!!.setText(location)
-        }
-        image = view.findViewById<ImageView>(R.id.postUrl_blueFrag)
-        if (imgUrl != null && imgUrl != "") {
-            Picasso.get().load(imgUrl).into(image)
-        }
-        labelTV = view.findViewById<TextView>(R.id.labelTv)
-        if (label != null) {
-            labelTV!!.setText(label)
-        }
-
-        //check if user has permissions
-        val currUserLabel = sp!!.getString("label", "")
-        if (currUserLabel == label) {
-            button.visibility = View.VISIBLE
-            button.setOnClickListener { view ->
-                val action: PostFragmentDirections.ActionPostFragmentToEditPostFragment =
-                    PostFragmentDirections.actionPostFragmentToEditPostFragment(
-                        LatLng(
-                            0.0,
-                            0.0
-                        ), location, id, title, details, label, imgUrl
-                    )
-                findNavController(view).navigate((action as NavDirections))
-            }
-        }
+//        // Inflate the layout for this fragment
+//        val view: View = inflater.inflate(R.layout.fragment_post, container, false)
+//        val button = view.findViewById<View>(R.id.editBtn_postFrag)
+//        button.visibility = View.INVISIBLE
+//        //show post details
+//        title = PostFragmentArgs.fromBundle(arguments).getPostTitle()
+//        details = PostFragmentArgs.fromBundle(arguments).getPostDetails()
+//        location = PostFragmentArgs.fromBundle(arguments).getPostLocInfo()
+//        imgUrl = PostFragmentArgs.fromBundle(arguments).getPostImgUrl()
+//        label = PostFragmentArgs.fromBundle(arguments).getPostLabel()
+//        id = PostFragmentArgs.fromBundle(arguments).getPostId()
+//        val titleTv = view.findViewById<TextView>(R.id.postfrag_title_tv)
+//        if (title != null) {
+//            titleTv.text = title
+//        }
+//        detailsTv = view.findViewById<TextView>(R.id.postDetails_tv)
+//        if (details != null) {
+//            detailsTv!!.setText(details)
+//        }
+//        locationTV = view.findViewById<TextView>(R.id.postLocation)
+//        if (location != null) {
+//            locationTV!!.setText(location)
+//        }
+//        image = view.findViewById<ImageView>(R.id.postUrl_blueFrag)
+//        if (imgUrl != null && imgUrl != "") {
+//            Picasso.get().load(imgUrl).into(image)
+//        }
+//        labelTV = view.findViewById<TextView>(R.id.labelTv)
+//        if (label != null) {
+//            labelTV!!.setText(label)
+//        }
+//
+//        //check if user has permissions
+//        val currUserLabel = sp!!.getString("label", "")
+//        if (currUserLabel == label) {
+//            button.visibility = View.VISIBLE
+//            button.setOnClickListener { view ->
+//                val action: PostFragmentDirections.ActionPostFragmentToEditPostFragment =
+//                    PostFragmentDirections.actionPostFragmentToEditPostFragment(
+//                        LatLng(
+//                            0.0,
+//                            0.0
+//                        ), location, id, title, details, label, imgUrl
+//                    )
+//                findNavController(view).navigate((action as NavDirections))
+//            }
+//        }
         return view
     }
 
@@ -104,19 +103,19 @@ class PostFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-    }
+//    override fun onStart() {
+//        super.onStart()
+//        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+//    }
+//
+//    override fun onResume() {
+//        super.onResume()
+//    }
+//
+//    override fun onStop() {
+//        super.onStop()
+//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+//    }
 
     companion object {
         fun newInstance(

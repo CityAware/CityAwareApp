@@ -1,5 +1,6 @@
 package com.example.cityaware
 
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,13 +18,14 @@ class PostViewHolder(itemView: View, listener: PostRecyclerAdapter.OnItemClickLi
     var idTv: TextView
     var avatarImage: ImageView
 
+
     init {
         nameTv = itemView.findViewById(R.id.postlistrow_name_tv)
-        idTv = itemView.findViewById<TextView>(R.id.postlistrow_id_tv)
+        idTv = itemView.findViewById(R.id.postlistrow_label_tv)
         avatarImage = itemView.findViewById(R.id.postlistrow_avatar_img)
         itemView.setOnClickListener {
             val pos = getAdapterPosition()
-            listener.onItemClick(pos)
+            listener!!.onItemClick(pos)
         }
     }
 
