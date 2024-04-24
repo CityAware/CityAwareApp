@@ -12,7 +12,6 @@ import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
-// Main Activityy
 class MainActivity : AppCompatActivity() {
     var navController: NavController? = null
     override fun onCreate(savedInstanceState: Bundle?) {
