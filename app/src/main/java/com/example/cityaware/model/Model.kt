@@ -59,7 +59,7 @@ class Model private constructor() {
 
     val db: FirebaseFirestore
         get() = firebaseModel.db
-    fun updatePostById(id: String?, updates: Map<String?, Any?>?) {
+    fun updatePostById(id: String?, updates: MutableMap<String, Any>?) {
         firebaseModel.updatePostByid(id, updates!!)
     }
 

@@ -1,3 +1,6 @@
+package com.example.cityaware
+
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Address
@@ -7,10 +10,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.example.cityaware.MapsFragmentModel
 import com.example.cityaware.R
+import com.example.cityaware.databinding.FragmentMapsBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -19,16 +28,22 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.button.MaterialButton
 import java.io.IOException
 
 class MapsFragment : Fragment(), OnMapReadyCallback {
+    private var mapsFragmentModel: MapsFragmentModel? = null
     private var mMapView: MapView? = null
-    var searchView: androidx.appcompat.widget.SearchView? = null
-    var map: GoogleMap? = null
+    private var searchView: SearchView? = null
+    private var currentLocBtn: MaterialButton? = null
+    private var map: GoogleMap? = null
     var geocoder: Geocoder? = null
     private var locationPermissionGranted = false
     private var lastKnownLocation: Location? = null
+    private var lastLatLng: LatLng? = null
     private var fusedLocationProviderClient: FusedLocationProviderClient? = null
+    private var savedInstanceState: Bundle? = null
+    var binding: FragmentMapsBinding? = null
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
@@ -39,185 +54,140 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            currentLocation
+            getCurrentLocation()
         } else {
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 REQUEST_LOCATION_PERMISSION_CODE
             )
+            getCurrentLocation()
         }
     }
 
-    private val currentLocation: Unit
-        private get() {
-            if (ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
-            fusedLocationProviderClient!!.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                    val latLng = LatLng(
-                        location.latitude,
-                        location.longitude
-                    )
-                    map!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-                    map!!.animateCamera(
-                        CameraUpdateFactory.zoomTo(DEFAULT_ZOOM),
-                        2000,
-                        null
-                    )
-                }
-                /*if (location != null) {
-                                try {
-                                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                                    if (addresses.size() > 0) {
-                                        String address = addresses.get(0).getAddressLine(0);
-                                        String city = addresses.get(0).getLocality();
-                                        String state = addresses.get(0).getAdminArea();
-                                        String country = addresses.get(0).getCountryName();
-                                        String postalCode = addresses.get(0).getPostalCode();
-                                        Log.d("Location: ", address + ", " + city + ", " + state + ", " + country + ", " + postalCode);
-                                    }
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }*/
+    private fun getCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        fusedLocationProviderClient!!.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                lastLatLng =
+                    LatLng(location.latitude, location.longitude)
+                map!!.moveCamera(CameraUpdateFactory.newLatLng(lastLatLng!!))
+                map!!.animateCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM), 2000, null)
             }
         }
-    private val deviceLocation: Unit
-        private get() {
-            try {
-                if (locationPermissionGranted) {
-                    val locationResult = fusedLocationProviderClient!!.lastLocation
-                    locationResult.addOnCompleteListener(
-                        requireActivity()
-                    ) { task ->
-                        if (task.isSuccessful) {
-                            lastKnownLocation = task.result
-                            if (lastKnownLocation != null) {
-                                map!!.moveCamera(
-                                    CameraUpdateFactory.newLatLngZoom(
-                                        LatLng(
-                                            lastKnownLocation!!.latitude,
-                                            lastKnownLocation!!.longitude
-                                        ), DEFAULT_ZOOM
-                                    )
-                                )
-                            }
-                        } else {
-                            map!!.moveCamera(
-                                CameraUpdateFactory
-                                    .newLatLngZoom(
-                                        LatLng(
-                                            lastKnownLocation!!.latitude,
-                                            lastKnownLocation!!.longitude
-                                        ), DEFAULT_ZOOM
-                                    )
-                            )
-                            map!!.uiSettings.isMyLocationButtonEnabled = false
-                        }
-                    }
-                }
-            } catch (e: SecurityException) {
-            }
+    }
+    private fun getLocationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            locationPermissionGranted = true
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+            )
         }
-    private val locationPermission: Unit
-        private get() {
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                == PackageManager.PERMISSION_GRANTED
-            ) {
-                locationPermissionGranted = true
-            } else {
-                ActivityCompat.requestPermissions(
-                    requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
-                )
-            }
-        }
-
+    }
+    @Deprecated("This method is deprecated", ReplaceWith("newMethod()"))
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<String>,
+        permissions: Array<String?>,
         grantResults: IntArray
     ) {
-        locationPermissionGranted = false
-        if (requestCode
-            == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
-        ) { // If request is cancelled, the result arrays are empty.
-            if (grantResults.size > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            ) {
-                locationPermissionGranted = true
+        locationPermissionGranted = when {
+            requestCode != PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+                false
             }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED -> true
+            else -> false
         }
         updateLocationUI()
     }
-
     private fun updateLocationUI() {
-        if (map == null) {
-            return
-        }
-        try {
-            if (locationPermissionGranted) {
-                map!!.isMyLocationEnabled = true
-                map!!.uiSettings.isMyLocationButtonEnabled = true
-            } else {
-                map!!.isMyLocationEnabled = false
-                map!!.uiSettings.isMyLocationButtonEnabled = false
-                lastKnownLocation = null
-                locationPermission
+        map?.let {
+            try {
+                if (locationPermissionGranted) {
+                    it.isMyLocationEnabled = true
+                    it.uiSettings.isMyLocationButtonEnabled = true
+                } else {
+                    it.isMyLocationEnabled = false
+                    it.uiSettings.isMyLocationButtonEnabled = false
+                    lastKnownLocation = null
+                    getLocationPermission()
+                }
+            } catch (e: SecurityException) {
+                // Handle the SecurityException here
             }
-        } catch (e: SecurityException) {
         }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val nView = inflater.inflate(R.layout.fragment_maps, container, false)
+//     View   nView= inflater.inflate(R.layout.fragment_maps, container, false);
+        binding = FragmentMapsBinding.inflate(inflater, container, false)
+        val nView = binding!!.root
         mMapView = nView.findViewById(R.id.map)
         searchView = nView.findViewById(R.id.idSearchView)
-        geocoder = Geocoder(requireContext())
+        this.savedInstanceState = savedInstanceState
+        currentLocBtn = nView.findViewById(R.id.current_loc_btn)
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION)
-            map!!.moveCamera(savedInstanceState.getParcelable(KEY_CAMERA_POSITION)!!)
+            map!!.moveCamera(this.savedInstanceState!!.getParcelable(KEY_CAMERA_POSITION)!!)
         }
-        initGoogleMap(savedInstanceState)
+        initGoogleMap(this.savedInstanceState)
         return nView
     }
 
     private fun init() {
-        searchView!!.setOnQueryTextListener(object :
-            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+        map!!.setOnMapClickListener { map_click: LatLng ->
+            lastLatLng =
+                LatLng(map_click.latitude, map_click.longitude)
+            var locationName = lastLatLng.toString()
+            try {
+                val address =
+                    geocoder!!.getFromLocation(map_click.latitude, map_click.longitude, 1)
+                if (address!!.size >= 1) {
+                    locationName = address!![0].getAddressLine(0)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            changeMarker(locationName)
+        }
+        searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 val location = searchView!!.query.toString()
-                var addressList: List<Address>? = null
-                if (location != null || location == "") {
-                    val geocoder = Geocoder(requireContext())
-                    try {
-                        addressList = geocoder.getFromLocationName(location, 1)
-                    } catch (e: IOException) {
-                        e.printStackTrace()
+                val addressList: List<Address>?
+                val geocoder = Geocoder(context!!)
+                try {
+                    addressList = geocoder.getFromLocationName(location, 1)
+                    if (addressList!!.size >= 1) {
+                        val address = addressList!![0]
+                        lastLatLng = LatLng(address.latitude, address.longitude)
+                        changeMarker(address.getAddressLine(0))
+                    } else {
+                        Toast.makeText(context, "Location Not Found", Toast.LENGTH_SHORT).show()
                     }
-                    val address = addressList!![0]
-                    val latLng = LatLng(address.latitude, address.longitude)
-                    map!!.addMarker(MarkerOptions().position(latLng).title(location))
-                    map!!.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10f))
+                } catch (e: IOException) {
+                    e.printStackTrace()
                 }
                 return false
             }
@@ -226,6 +196,40 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 return false
             }
         })
+        currentLocBtn!!.setOnClickListener { btn_click: View? ->
+            getCurrentLocation()
+            if (lastLatLng != null) {
+                var locationName = lastLatLng.toString()
+                try {
+                    val address =
+                        geocoder!!.getFromLocation(
+                            lastLatLng!!.latitude, lastLatLng!!.longitude, 1
+                        )
+                    if (address!!.size >= 1) {
+                        locationName = address!![0].getAddressLine(0)
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+                changeMarker(locationName)
+            }
+        }
+    }
+    private fun changeMarker(title: String) {
+        map!!.clear()
+        map!!.addMarker(MarkerOptions().position(lastLatLng!!).title(title))
+        map!!.animateCamera(CameraUpdateFactory.newLatLngZoom(lastLatLng!!, DEFAULT_ZOOM))
+        val marker = MarkerOptions()
+            .position(lastLatLng!!)
+            .title(title)
+        map!!.clear()
+        map!!.addMarker(marker)
+        if (savedInstanceState == null) {
+            savedInstanceState = Bundle()
+        }
+        savedInstanceState!!.putParcelable("locationTemp", lastLatLng)
+        savedInstanceState!!.putString("locationNameTemp", title)
+        mapsFragmentModel!!.setSavedInstanceStateData(savedInstanceState)
     }
 
     private fun initGoogleMap(savedInstanceState: Bundle?) {
@@ -236,13 +240,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         mMapView!!.onCreate(mapViewBundle)
         mMapView!!.getMapAsync(this)
     }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val viewModelProvider = ViewModelProvider(requireActivity())
+        mapsFragmentModel = viewModelProvider[MapsFragmentModel::class.java]
+    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         var mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY)
         if (map != null) {
             outState.putParcelable(KEY_CAMERA_POSITION, map!!.cameraPosition)
-            outState.putParcelable(KEY_LOCATION, lastKnownLocation)
+            outState.putParcelable(KEY_LOCATION, lastLatLng)
         }
         if (mapViewBundle == null) {
             mapViewBundle = Bundle()
@@ -259,11 +268,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     override fun onStart() {
         super.onStart()
         mMapView!!.onStart()
+        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
     }
 
     override fun onStop() {
         super.onStop()
         mMapView!!.onStop()
+        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
     }
 
     companion object {

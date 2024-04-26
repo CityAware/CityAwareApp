@@ -29,31 +29,31 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD-q25_k7g6jPue3avd7zGrtwSYtkInfrs" />
+            android:value="AIzaSyAwqlMCZ7L2yylR1g6LTJqFU1vbzhGCZbk" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <activity
-            android:name=".SignUpActivity"
-            android:exported="true">
-
+            android:name=".LogInActivity"
+            android:exported="true"
+            android:theme="@style/Theme.CityAware.NoAction">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
-            android:name=".LogInActivity"
-            android:exported="false">
+            android:name=".SignUpActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CityAware.NoAction">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-
         </activity>
 
         <activity
@@ -62,8 +62,6 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-
-
         </activity>
     </application>
 

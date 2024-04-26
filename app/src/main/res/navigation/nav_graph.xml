@@ -102,7 +102,7 @@
     </fragment>
     <fragment
         android:id="@+id/userProfile"
-        android:name="com.example.cityaware.userProfile"
+        android:name="com.example.cityaware.UserProfile"
         android:label=""
         tools:layout="@layout/fragment_user_profile" >
         <action

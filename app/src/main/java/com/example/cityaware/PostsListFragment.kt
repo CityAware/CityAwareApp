@@ -1,70 +1,133 @@
 package com.example.cityaware
 
 
+import android.app.FragmentManager
+
 import android.content.Context
+
+import android.content.SharedPreferences
+
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+
+
+import androidx.annotation.NonNull
+
+import androidx.appcompat.app.AppCompatActivity
+
 import androidx.fragment.app.Fragment
+
 import androidx.lifecycle.ViewModelProvider
+
+import androidx.navigation.NavController
+
+import androidx.navigation.NavDestination
+
 import androidx.navigation.NavDirections
-import androidx.navigation.Navigation.createNavigateOnClickListener
-import androidx.navigation.Navigation.findNavController
+
+import androidx.navigation.Navigation
+
 import androidx.recyclerview.widget.LinearLayoutManager
+
+
+import android.util.Log
+
+import android.view.LayoutInflater
+
+import android.view.View
+
+import android.view.ViewGroup
+
+
 import com.example.cityaware.databinding.FragmentPostsListBinding
+
 import com.example.cityaware.model.Model
+
+import com.example.cityaware.model.Post
+
+import com.google.android.material.bottomnavigation.BottomNavigationView
+
+import com.squareup.picasso.MemoryPolicy
+
+import com.squareup.picasso.Picasso
 
 
 class PostsListFragment : Fragment() {
-//    var binding: FragmentPostsListBinding? = null
-//    var adapter: PostRecyclerAdapter? = null
-//    var viewModel: PostsListFragmentViewModel? = null
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        // Inflate the layout for this fragment
-//        binding = FragmentPostsListBinding.inflate(inflater, container, false)
-//        val view: View = binding!!.getRoot()
-//        binding!!.recyclerView.setHasFixedSize(true)
-//        binding!!.recyclerView.setLayoutManager(LinearLayoutManager(context))
-//        adapter = PostRecyclerAdapter(getLayoutInflater(), viewModel!!.data)
-//        binding!!.recyclerView.setAdapter(adapter)
-//        adapter!!.setOnItemClickListener(object : PostRecyclerAdapter.OnItemClickListener {
-//            override fun onItemClick(pos: Int) {
-//                Log.d("TAG", "Row was clicked $pos")
-//                val st = viewModel!!.data[pos]
-//                val action: PostsListFragmentDirections.ActionPostsListFragmentToBlueFragment =
-//                    PostsListFragmentDirections.actionPostsListFragmentToBlueFragment(st.title)
-//                findNavController(view).navigate((action as NavDirections))
-//            }
-//        })
-//        val addButton = view.findViewById<View>(R.id.btnAdd)
-//        val action: NavDirections = PostsListFragmentDirections.actionGlobalAddPostFragment()
-//        addButton.setOnClickListener(createNavigateOnClickListener(action))
-//        return view
-//    }
-//
-//    override fun onAttach(context: Context) {
-//        super.onAttach(context)
-//        viewModel = ViewModelProvider(this).get(
-//            PostsListFragmentViewModel::class.java
-//        )
-//    }
-//
-//    override fun onResume() {
-//        super.onResume()
-//        reloadData()
-//    }
-//
-//    fun reloadData() {
-//        binding!!.progressBar.visibility = View.VISIBLE
-//        Model.instance().getAllPosts({ stList ->
-//            viewModel!!.data = stList
-//            adapter!!.setData(viewModel!!.data)
-//            binding!!.progressBar.visibility = View.GONE
-//        })
-//    }
-}
+        private lateinit var binding: FragmentPostsListBinding
+        private lateinit var adapter: PostRecyclerAdapter
+        private lateinit var postListViewModel: PostsListFragmentViewModel
+        private lateinit var bottomNavigationView: BottomNavigationView
+        private lateinit var sp: SharedPreferences
+        private lateinit var viewModelProvider: ViewModelProvider
+        private lateinit var userViewModel: UserProfileViewModel
+
+        override fun onCreateView(
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View? {
+            bottomNavigationView = requireActivity().findViewById(R.id.main_bottomNavigationView)
+            binding = FragmentPostsListBinding.inflate(inflater, container, false)
+            val view: View = binding.root
+            binding.recyclerView.setHasFixedSize(true)
+            binding.recyclerView.layoutManager = LinearLayoutManager(context)
+            adapter = PostRecyclerAdapter(inflater, postListViewModel.getData())
+            binding.recyclerView.adapter = adapter
+            viewModelProvider = ViewModelProvider(requireActivity())
+            userViewModel = viewModelProvider.get(UserProfileViewModel::class.java)
+
+            adapter.setOnItemClickListener(object : PostRecyclerAdapter.OnItemClickListener {
+                override fun onItemClick(pos: Int) {
+                    val st: Post = postListViewModel.getData().get(pos)
+                    Picasso.get().invalidate(st.imgUrl)
+                    val action = PostsListFragmentDirections.actionPostsListFragmentToPostFragment(
+                        st.title, st.details, st.location, st.label, st.imgUrl, st.id
+                    )
+                    Navigation.findNavController(view).navigate(action as NavDirections)
+                }
+            })
+
+            return view
+        }
+
+        override fun onAttach(context: Context) {
+            super.onAttach(context)
+            postListViewModel = ViewModelProvider(this).get(PostsListFragmentViewModel::class.java)
+        }
+
+        override fun onStart() {
+            super.onStart()
+            reloadData(userViewModel.getActiveState())
+        }
+
+        override fun onResume() {
+            super.onResume()
+            reloadData(userViewModel.getActiveState())
+        }
+
+        override fun onStop() {
+            super.onStop()
+        }
+
+    fun reloadData(activeState: Boolean) {
+        binding.progressBar.visibility = View.VISIBLE
+        if (!activeState) {
+            Model.instance().getAllPosts(object : Model.Listener<List<Post?>?> {
+                override fun onComplete(stList: List<Post?>?) {
+                    val nonNullList = stList?.filterNotNull() ?: listOf()
+                    postListViewModel.setData(nonNullList) // set the data in the view model
+                    adapter.data = postListViewModel.getData()
+                    binding.progressBar.visibility = View.GONE
+                }
+            })
+        } else {
+            sp = requireActivity().getSharedPreferences("user", Context.MODE_PRIVATE)
+            Model.instance().getUserPosts(sp.getString("label", ""), object : Model.Listener<List<Post?>?> {
+                override fun onComplete(stList: List<Post?>?) {
+                    val nonNullList = stList?.filterNotNull() ?: listOf()
+                    postListViewModel.setData(nonNullList) // set the data in the view model
+                    adapter.data = postListViewModel.getData()
+                    binding.progressBar.visibility = View.GONE
+                }
+            })
+        }
+    }
+    }

@@ -17,6 +17,13 @@ class User {
         json[ACCOUNT_LABEL] = label
         return json
     }
+    fun fromJson(json: Map<String?, Any?>): User {
+        val email =
+            json[EMAIL] as String?
+        val label =
+            json[ACCOUNT_LABEL] as String?
+        return User(email, label)
+    }
 
     companion object {
         const val EMAIL = "email"
