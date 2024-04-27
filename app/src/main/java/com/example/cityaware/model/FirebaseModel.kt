@@ -118,14 +118,14 @@ class FirebaseModel internal constructor() {
     fun signUp(
         email: String,
         label: String,
-        password: String?,
-        listener: Model.Listener<Pair<Boolean?, String?>?>
+        password: String,
+        listener: Model.Listener<Pair<Boolean, String>>
     ) {
         db.collection(User.COLLECTION).whereEqualTo(User.ACCOUNT_LABEL, label).get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     if (task.result.isEmpty) {
-                        auth.createUserWithEmailAndPassword(email!!, password!!)
+                        auth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     // Add the new user to the database
@@ -174,7 +174,7 @@ class FirebaseModel internal constructor() {
     fun login(
         email: String,
         password: String,
-        listener: Model.Listener<Pair<Boolean?, String?>?>
+        listener: Model.Listener<Pair<Boolean, String>>
     ) {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {

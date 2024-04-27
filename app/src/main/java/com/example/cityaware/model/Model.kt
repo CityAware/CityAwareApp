@@ -17,7 +17,7 @@ class Model private constructor() {
         firebaseModel.signOut()
     }
 
-    interface Listener<T> {
+    fun interface Listener<T> {
         fun onComplete(data: T)
     }
 
@@ -43,13 +43,13 @@ class Model private constructor() {
     fun signUp(
         email: String,
         label: String,
-        password: String?,
-        listener: Listener<kotlin.Pair<Boolean?, String?>?>
+        password: String,
+        listener: Listener<Pair<Boolean, String>>
     ) {
         firebaseModel.signUp(email, label, password, listener)
     }
 
-    fun login(email: String, password: String, listener: Listener<kotlin.Pair<Boolean?, String?>?>) {
+    fun login(email: String, password: String, listener: Listener<Pair<Boolean, String>>) {
         firebaseModel.login(email, password, listener)
     }
 

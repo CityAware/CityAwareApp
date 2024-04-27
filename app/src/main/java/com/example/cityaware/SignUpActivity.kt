@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.PasswordTransformationMethod
+import android.view.Display.Mode
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -83,35 +84,33 @@ class SignUpActivity : AppCompatActivity() {
                     animation.setRepeatCount(Animation.INFINITE)
                     loaderIV.startAnimation(animation)
                 }
-                Model.instance().signUp(email, label, password, object : Model.Listener<Pair<Boolean?, String?>?> {
-                    override fun onComplete(data: Pair<Boolean?, String?>?) {
+                Model.instance().signUp(email, label, password,Model.Listener<Pair<Boolean,String>>{
+                    var second=it.second
+                    if (it.first==true) {
+                        // Sign up success, update UI with the signed-in user's information
+                        Toast.makeText(this@SignUpActivity, second, Toast.LENGTH_SHORT)
+                            .show()
+                        val editor = sp.edit()
+                        editor.putString("email", email)
+                        editor.putString("label", label)
+                        editor.putString("password", password)
+                        editor.apply()
+                        i = Intent(applicationContext, MainActivity::class.java)
+                        val bundle = ActivityOptionsCompat.makeCustomAnimation(
+                            applicationContext, android.R.anim.fade_in, android.R.anim.fade_out
+                        )
+                            .toBundle()
+                        startActivity(i, bundle)
+                        finish()
+                    } else {
+                        errorTV.setText(second)
 
-                        if (data?.first==true) {
-                            // Sign up success, update UI with the signed-in user's information
-                            Toast.makeText(this@SignUpActivity, data.second, Toast.LENGTH_SHORT)
-                                .show()
-                            val editor = sp.edit()
-                            editor.putString("email", email)
-                            editor.putString("label", label)
-                            editor.putString("password", password)
-                            editor.apply()
-                            i = Intent(applicationContext, MainActivity::class.java)
-                            val bundle = ActivityOptionsCompat.makeCustomAnimation(
-                                applicationContext, android.R.anim.fade_in, android.R.anim.fade_out
-                            )
-                                .toBundle()
-                            startActivity(i, bundle)
-                            finish()
-                        } else {
-                            errorTV.setText(data?.second)
-
-                        }
-                        loaderIV.post {
-                            loaderIV.clearAnimation()
-                            loaderIV.setVisibility(View.GONE)
-                        }
-                        signUpBtn.isClickable = true
                     }
+                    loaderIV.post {
+                        loaderIV.clearAnimation()
+                        loaderIV.setVisibility(View.GONE)
+                    }
+                    signUpBtn.isClickable = true
                 })
             }
         }

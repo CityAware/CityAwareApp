@@ -87,43 +87,44 @@ class LogInActivity : AppCompatActivity() {
                     animation.setRepeatCount(Animation.INFINITE)
                     loaderIV.startAnimation(animation)
                 }
-                Model.instance().login(email, password, object : Model.Listener<Pair<Boolean?, String?>?> {
-                    override fun onComplete(result: Pair<Boolean?, String?>?) {
-                        if (result?.first == true) {
-                            Model.instance().db.collection("users")
-                                .whereEqualTo("email", email)
-                                .get()
-                                .addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        val querySnapshot = task.result
-                                        if (!querySnapshot.isEmpty) {
-                                            val document = querySnapshot.documents[0]
-                                            label = document.getString("label").toString()
-                                            val editor = sp.edit()
-                                            editor.putString("email", email)
-                                            editor.putString("label", label)
-                                            editor.putString("password", password)
-                                            editor.apply()
-                                            val intent = Intent(applicationContext, MainActivity::class.java)
-                                            val bundle = ActivityOptionsCompat.makeCustomAnimation(
-                                                applicationContext, android.R.anim.fade_in, android.R.anim.fade_out
-                                            ).toBundle()
-                                            startActivity(intent, bundle)
-                                            finish()
-                                        }
-                                    } else {
-                                        errorTV.text = "An Error has occurred"
+                Model.instance().login(email, password,  Model.Listener<Pair<Boolean, String>> {
+                    Model.instance().login(email, password,  Model.Listener<Pair<Boolean,String>> {
+                        var second = it.second
+                        if (it.first){
+                            Model.instance().db.collection("users").whereEqualTo("email",email).get().addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    errorTV.setText(second)
+                                    val querySnapshot = task.result
+                                    if (!querySnapshot.isEmpty) {
+                                        val document = querySnapshot.documents[0]
+                                        label = document.getString("label")!!
+                                        val editor = sp.edit()
+                                        editor.putString("email", email)
+                                        editor.putString("label", label)
+                                        editor.putString("password", password)
+                                        editor.apply()
+                                        i = Intent(applicationContext, MainActivity::class.java)
+                                        val bundle = ActivityOptionsCompat.makeCustomAnimation(
+                                            applicationContext,
+                                            android.R.anim.fade_in,
+                                            android.R.anim.fade_out
+                                        ).toBundle()
+                                        startActivity(i, bundle)
+                                        finish()
                                     }
+                                } else {
+                                    errorTV.text = "An Error has occurred"
                                 }
-                        } else {
-                            errorTV.text = result?.second
+                            }
+                        }else {
+                            errorTV.text = second
                         }
                         loaderIV.post {
                             loaderIV.clearAnimation()
                             loaderIV.visibility = View.GONE
                         }
                         LogIn_btn.isClickable = true
-                    }
+                    })
                 })
             }
         })
