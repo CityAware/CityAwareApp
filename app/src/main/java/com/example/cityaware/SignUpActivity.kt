@@ -22,40 +22,46 @@ import com.google.android.material.textfield.TextInputEditText
 
 
 class SignUpActivity : AppCompatActivity() {
-    var editTextEmail: TextInputEditText? = null
-    var editTextPassword: TextInputEditText? = null
-    var editTextAccLabel: TextInputEditText? = null
-    var errorTV: TextView? = null
-    var loaderIV: ImageView? = null
-    var signUpBtn: Button? = null
-    var i: Intent? = null
-    var sp: SharedPreferences? = null
+   lateinit var editTextEmail: TextInputEditText
+    lateinit var editTextPassword: TextInputEditText
+    lateinit var editTextAccLabel: TextInputEditText
+    lateinit var errorTV: TextView
+    lateinit var toLogIn: TextView
+    lateinit var loaderIV: ImageView
+    lateinit var signUpBtn: Button
+    lateinit var i: Intent
+    lateinit var sp: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
-        setTitle(R.string.signup)
+        toLogIn = findViewById<TextView>(R.id.signup_to_login_tv)
         sp = getSharedPreferences("user", MODE_PRIVATE)
         editTextEmail = findViewById(R.id.email)
         editTextPassword = findViewById(R.id.password)
-        editTextPassword!!.setTransformationMethod(PasswordTransformationMethod())
+        editTextPassword.transformationMethod = PasswordTransformationMethod()
+
         editTextAccLabel = findViewById(R.id.AccLabel)
         LabelChecker()
+
         errorTV = findViewById(R.id.signup_error)
         loaderIV = findViewById(R.id.loading_spinner)
-        loaderIV!!.setVisibility(View.GONE)
+        loaderIV.setVisibility(View.GONE)
+
         signUpBtn = findViewById(R.id.signUpBtn)
         SignUpListener()
+
+        toLogIn.setOnClickListener(View.OnClickListener { toLogIn: View? -> backToLogIn() })
     }
 
     private fun SignUpListener() {
-        signUpBtn!!.setOnClickListener {
-            errorTV!!.text = ""
+        signUpBtn.setOnClickListener {
+            errorTV.text = ""
             val password: String
             val email: String
             val label: String
-            email = editTextEmail!!.getText().toString()
-            password = editTextPassword!!.getText().toString()
-            label = editTextAccLabel!!.getText().toString()
+            email = editTextEmail.getText().toString()
+            password = editTextPassword.getText().toString()
+            label = editTextAccLabel.getText().toString()
             if (email.isEmpty() || password.isEmpty() || label.isEmpty()) {
                 Toast.makeText(
                     baseContext,
@@ -63,10 +69,11 @@ class SignUpActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             } else {
-                signUpBtn!!.isClickable = false
+                signUpBtn.isClickable = false
                 // Load in UI Thread
-                loaderIV!!.post {
-                    loaderIV!!.setVisibility(View.VISIBLE)
+                // Load in UI Thread
+                loaderIV.post {
+                    loaderIV.setVisibility(View.VISIBLE)
                     val animation = RotateAnimation(
                         360.0f, 0.0f,
                         Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f
@@ -74,16 +81,16 @@ class SignUpActivity : AppCompatActivity() {
                     animation.interpolator = LinearInterpolator()
                     animation.setDuration(1000)
                     animation.setRepeatCount(Animation.INFINITE)
-                    loaderIV!!.startAnimation(animation)
+                    loaderIV.startAnimation(animation)
                 }
                 Model.instance().signUp(email, label, password, object : Model.Listener<Pair<Boolean?, String?>?> {
                     override fun onComplete(data: Pair<Boolean?, String?>?) {
-                        val isValid = data?.first
-                        if (isValid == true) {
-                            //    Sign up success, update UI with the signed-in user's information
+
+                        if (data?.first==true) {
+                            // Sign up success, update UI with the signed-in user's information
                             Toast.makeText(this@SignUpActivity, data.second, Toast.LENGTH_SHORT)
                                 .show()
-                            val editor = sp!!.edit()
+                            val editor = sp.edit()
                             editor.putString("email", email)
                             editor.putString("label", label)
                             editor.putString("password", password)
@@ -96,23 +103,36 @@ class SignUpActivity : AppCompatActivity() {
                             startActivity(i, bundle)
                             finish()
                         } else {
-                            errorTV!!.setText(data?.second ?: "")
-                            Toast.makeText(this@SignUpActivity, data?.second, Toast.LENGTH_SHORT)
-                                .show()
+                            errorTV.setText(data?.second)
+
                         }
-                        loaderIV!!.post {
-                            loaderIV!!.clearAnimation()
-                            loaderIV!!.setVisibility(View.GONE)
+                        loaderIV.post {
+                            loaderIV.clearAnimation()
+                            loaderIV.setVisibility(View.GONE)
                         }
-                        signUpBtn!!.isClickable = true
+                        signUpBtn.isClickable = true
                     }
                 })
             }
         }
     }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        backToLogIn()
+    }
+
+    private fun backToLogIn() {
+        i = Intent(applicationContext, LogInActivity::class.java)
+        val bundle = ActivityOptionsCompat.makeCustomAnimation(
+            applicationContext, android.R.anim.fade_in, android.R.anim.fade_out
+        )
+            .toBundle()
+        startActivity(i, bundle)
+        finish()
+    }
 
     private fun LabelChecker() {
-        editTextAccLabel!!.addTextChangedListener(object : TextWatcher {
+        editTextAccLabel.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 // This method is called when the text is changed
@@ -120,8 +140,8 @@ class SignUpActivity : AppCompatActivity() {
                 val keyRegex = "[a-zA-Z0-9]"
                 if (s.toString().contains(" ")) {
                     s = s.toString().replace(" ", "")
-                    editTextAccLabel!!.setText(s)
-                    editTextAccLabel!!.setSelection(s.length)
+                    editTextAccLabel.setText(s)
+                    editTextAccLabel.setSelection(s.length)
                 }
                 if (s.length != 0 && !s[s.length - 1].toString()
                         .matches(keyRegex.toRegex()) && before != 1
@@ -133,18 +153,18 @@ class SignUpActivity : AppCompatActivity() {
                             .toTypedArray().size > 1) {
                         val atIndex = s.toString().lastIndexOf("@")
                         val PrevS = s.subSequence(atIndex, s.length).toString()
-                        editTextAccLabel!!.setText(PrevS)
-                        editTextAccLabel!!.setSelection(1)
+                        editTextAccLabel.setText(PrevS)
+                        editTextAccLabel.setSelection(1)
                     } else {
                         s = "@$s"
-                        editTextAccLabel!!.setText(s)
-                        editTextAccLabel!!.setSelection(s.length)
+                        editTextAccLabel.setText(s)
+                        editTextAccLabel.setSelection(s.length)
                     }
                 }
                 if (s.toString() == "@") {
                     s = ""
-                    editTextAccLabel!!.setText(s)
-                    editTextAccLabel!!.setSelection(s.length)
+                    editTextAccLabel.setText(s)
+                    editTextAccLabel.setSelection(s.length)
                 }
             }
 

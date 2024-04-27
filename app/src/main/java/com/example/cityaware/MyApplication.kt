@@ -1,17 +1,18 @@
 package com.example.cityaware
-
+import com.google.firebase.FirebaseApp
 import android.app.Application
 import android.content.Context
 
 
 class MyApplication : Application() {
-    private var context: Context? = null
-    fun getMyContext(): Context? {
-        return context
-    }
-
     override fun onCreate() {
         super.onCreate()
-        context = applicationContext
+        myContext = applicationContext
+    }
+
+    companion object {
+       lateinit var myContext: Context
+            private set
     }
 }
+

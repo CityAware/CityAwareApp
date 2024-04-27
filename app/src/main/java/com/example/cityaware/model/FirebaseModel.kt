@@ -75,7 +75,7 @@ class FirebaseModel internal constructor() {
             }
     }
 
-    fun updatePostByid(id: String?, updates: Map<String?, Any?>) {
+    fun updatePostByid(id: String?, updates: MutableMap<String, Any>) {
         val db = FirebaseFirestore.getInstance()
         Log.d("map", updates.toString())
         val collRef = db.collection("posts")
@@ -116,8 +116,8 @@ class FirebaseModel internal constructor() {
     }
 
     fun signUp(
-        email: String?,
-        label: String?,
+        email: String,
+        label: String,
         password: String?,
         listener: Model.Listener<Pair<Boolean?, String?>?>
     ) {
@@ -172,11 +172,11 @@ class FirebaseModel internal constructor() {
     }
 
     fun login(
-        email: String?,
-        password: String?,
+        email: String,
+        password: String,
         listener: Model.Listener<Pair<Boolean?, String?>?>
     ) {
-        auth.signInWithEmailAndPassword(email!!, password!!).addOnCompleteListener { task ->
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 CurrUser = auth.currentUser
                 listener.onComplete(Pair(true, "Logged in successfully"))

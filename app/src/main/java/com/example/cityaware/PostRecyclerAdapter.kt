@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cityaware.model.Post
 import com.squareup.picasso.Picasso
-import com.example.cityaware.R
+
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.NetworkPolicy
 
@@ -50,10 +50,10 @@ class PostRecyclerAdapter(private var inflater: LayoutInflater, var data: List<P
         fun onItemClick(pos: Int)
     }
 
-    fun setData(data: List<Post>) {
-        this.data = data
-        notifyDataSetChanged()
-    }
+//    fun setData(data: List<Post>) {
+//        this.data = data
+//        notifyDataSetChanged()
+//    }
 
     fun setOnItemClickListener(listener: OnItemClickListener?) {
         this.listener = listener

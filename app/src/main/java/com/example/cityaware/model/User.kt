@@ -2,11 +2,11 @@ package com.example.cityaware.model
 
 
 class User {
-    var email: String? = ""
-    var label: String? = ""
+    var email: String = ""
+    var label: String = ""
 
     internal constructor()
-    constructor(email: String?, label: String?) {
+    constructor(email: String, label: String) {
         this.email = email
         this.label = label
     }
@@ -19,9 +19,9 @@ class User {
     }
     fun fromJson(json: Map<String?, Any?>): User {
         val email =
-            json[EMAIL] as String?
+            json[EMAIL] as String
         val label =
-            json[ACCOUNT_LABEL] as String?
+            json[ACCOUNT_LABEL] as String
         return User(email, label)
     }
 
@@ -30,8 +30,8 @@ class User {
         const val ACCOUNT_LABEL = "label"
         const val COLLECTION = "users"
         fun fromJson(json: Map<String?, Any?>): User {
-            val email = json[EMAIL] as String?
-            val label = json[ACCOUNT_LABEL] as String?
+            val email = json[EMAIL] as String
+            val label = json[ACCOUNT_LABEL] as String
             return User(email, label)
         }
     }

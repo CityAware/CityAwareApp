@@ -15,7 +15,7 @@ abstract class AppLocalDbRepository() : RoomDatabase() {
 object AppLocalDb {
     val getAppDb: AppLocalDbRepository
         get() = databaseBuilder(
-            MyApplication.getMyContext!!,
+            MyApplication.myContext,
             AppLocalDbRepository::class.java,
             "dbPost.db"
         )

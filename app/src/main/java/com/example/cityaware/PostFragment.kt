@@ -12,9 +12,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.Navigation.findNavController
-import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.model.LatLng
 import com.squareup.picasso.Picasso
+
+import androidx.navigation.Navigation
+
 
 class PostFragment : Fragment() {
 
@@ -73,12 +75,12 @@ class PostFragment : Fragment() {
         val button = view.findViewById<View>(R.id.editBtn_postFrag)
         button.visibility = View.INVISIBLE
         //show post details
-        title = PostFragmentArgs.fromBundle(arguments).getPostTitle()
-        details = PostFragmentArgs.fromBundle(arguments).getPostDetails()
-        location = PostFragmentArgs.fromBundle(arguments).getPostLocInfo()
-        imgUrl = PostFragmentArgs.fromBundle(arguments).getPostImgUrl()
-        label = PostFragmentArgs.fromBundle(arguments).getPostLabel()
-        id = PostFragmentArgs.fromBundle(arguments).getPostId()
+        title = PostFragmentArgs.fromBundle(requireArguments()).postTitle
+        details = PostFragmentArgs.fromBundle(requireArguments()).postDetails
+        location = PostFragmentArgs.fromBundle(requireArguments()).postLocInfo
+        imgUrl = PostFragmentArgs.fromBundle(requireArguments()).PostImgUrl
+        label = PostFragmentArgs.fromBundle(requireArguments()).postLabel
+        id = PostFragmentArgs.fromBundle(requireArguments()).postId
         val titleTv = view.findViewById<TextView>(R.id.postfrag_title_tv)
         if (title != null) {
             titleTv.text = title
@@ -105,25 +107,16 @@ class PostFragment : Fragment() {
         if (currUserLabel == label) {
             button.visibility = View.VISIBLE
             button.setOnClickListener { view ->
-                val action: PostFragmentDirections.ActionPostFragmentToEditPostFragment =
-                    PostFragmentDirections.actionPostFragmentToEditPostFragment(
-                        LatLng(
-                            0.0,
-                            0.0
-                        ), location, id, title, details, label, imgUrl
-                    )
-                findNavController(view).navigate((action as NavDirections))
+                val action = PostFragmentDirections.actionPostFragmentToEditPostFragment(
+                    LatLng(0.0, 0.0), location!!, id!!, title!!, details!!, label!!, imgUrl!!
+                )
+                findNavController(view).navigate(action)
             }
         }
         return view
     }
 
-    fun setTitle(title: String?) {
-        this.title = title
-        if (titleTv != null) {
-            titleTv!!.text = title
-        }
-    }
+
 
     override fun onStart() {
         super.onStart()

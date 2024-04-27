@@ -133,7 +133,7 @@ public override fun onCreateView(
         val title = binding!!.postTitle.getText().toString()
         val details = binding!!.postDes.getText().toString()
         val location = binding!!.address.getText().toString()
-        val label = sp!!.getString("label", "")
+        val label:String = sp!!.getString("label", "")!!
         var id = title
         try {
             val digest =
