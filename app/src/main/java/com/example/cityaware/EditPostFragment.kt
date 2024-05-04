@@ -1,4 +1,4 @@
-package com.example.karenhub
+package com.example.cityaware
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -22,8 +22,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation.findNavController
-import com.example.karenhub.databinding.FragmentEditPostBinding
-import com.example.karenhub.model.Model
+import com.example.cityaware.databinding.FragmentEditPostBinding
+import com.example.cityaware.model.Model
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.squareup.picasso.Picasso

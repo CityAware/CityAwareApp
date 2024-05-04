@@ -1,4 +1,4 @@
-package com.example.karenhub
+package com.example.cityaware
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable

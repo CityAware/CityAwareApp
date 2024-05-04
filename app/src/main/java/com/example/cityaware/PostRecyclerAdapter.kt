@@ -8,52 +8,64 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cityaware.model.Post
-import com.squareup.picasso.Picasso
-
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.NetworkPolicy
+import com.squareup.picasso.Picasso
 
-class PostViewHolder(itemView: View, private val listener: PostRecyclerAdapter.OnItemClickListener?, private val data: List<Post>) :
-    RecyclerView.ViewHolder(itemView) {
-    private val nameTv: TextView = itemView.findViewById(R.id.postlistrow_name_tv)
-    private val idTv: TextView = itemView.findViewById(R.id.postlistrow_label_tv)
-    private val avatarImage: ImageView = itemView.findViewById(R.id.postlistrow_avatar_img)
+class PostViewHolder constructor(
+    itemView: View,
+    listener: PostRecyclerAdapter.OnItemClickListener?,
+    var data: List<Post?>?
+) : RecyclerView.ViewHolder(itemView) {
+    var nameTv: TextView
+    var idTv: TextView
+    var avatarImage: ImageView
 
     init {
-        itemView.setOnClickListener {
-            val pos = adapterPosition
-            listener?.onItemClick(pos)
-        }
+        nameTv = itemView.findViewById(R.id.postlistrow_name_tv)
+        idTv = itemView.findViewById(R.id.postlistrow_label_tv)
+        avatarImage = itemView.findViewById(R.id.postlistrow_avatar_img)
+        itemView.setOnClickListener(object : View.OnClickListener {
+            public override fun onClick(view: View) {
+                val pos: Int = getAdapterPosition()
+                listener!!.onItemClick(pos)
+            }
+        })
     }
 
-    fun bind(post: Post) {
-        nameTv.text = post.title
-        idTv.text = post.label
-        if (post.imgUrl != "") {
+    fun bind(post: Post?, pos: Int) {
+        nameTv.setText(post!!.title)
+        idTv.setText(post.label)
+        if (post.imgUrl !== "") {
+            //Picasso.get().load(post.getImgUrl()).placeholder(R.drawable.avatar).into(avatarImage);
             Picasso.get()
                 .load(post.imgUrl)
                 .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                 .networkPolicy(NetworkPolicy.NO_CACHE)
                 .into(avatarImage)
+            //.placeholder(R.drawable.avatar)
         } else {
             avatarImage.setImageResource(R.drawable.noimage)
         }
     }
 }
 
+class PostRecyclerAdapter constructor(
+    private val inflater: LayoutInflater,
+    data: List<Post?>? = null
+) : RecyclerView.Adapter<PostViewHolder>() {
 
-class PostRecyclerAdapter(private var inflater: LayoutInflater, var data: List<Post>) :
-    RecyclerView.Adapter<PostViewHolder>() {
+    var data: List<Post?>? = data
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     var listener: OnItemClickListener? = null
 
     interface OnItemClickListener {
         fun onItemClick(pos: Int)
     }
-
-//    fun setData(data: List<Post>) {
-//        this.data = data
-//        notifyDataSetChanged()
-//    }
 
     fun setOnItemClickListener(listener: OnItemClickListener?) {
         this.listener = listener
@@ -65,11 +77,9 @@ class PostRecyclerAdapter(private var inflater: LayoutInflater, var data: List<P
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        val st = data[position]
-        holder.bind(st)
+        val post = data?.get(position)
+        holder.bind(post, position)
     }
 
-    override fun getItemCount(): Int {
-        return data.size
-    }
+    override fun getItemCount(): Int = data?.size ?: 0
 }

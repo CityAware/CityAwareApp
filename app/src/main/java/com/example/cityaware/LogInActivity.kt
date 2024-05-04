@@ -1,4 +1,4 @@
-package com.example.karenhub
+package com.example.cityaware
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -14,7 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
-import com.example.karenhub.model.Model
+import com.example.cityaware.model.Model
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseUser
@@ -32,7 +32,7 @@ class LogInActivity : AppCompatActivity() {
     var sp: SharedPreferences? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_log_in)
+        setContentView(R.layout.activity_login)
         LogIn_email = findViewById(R.id.logInEmail)
         LogIn_password = findViewById(R.id.logInPassword)
         LogIn_btn = findViewById(R.id.login_btn1)

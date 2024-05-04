@@ -4,27 +4,33 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
-
 @Entity
 class Post {
+    @JvmField
     @PrimaryKey
     var id = ""
-    var title: String = ""
-    var imgUrl: String = ""
-    var details: String = ""
-    var location: String = ""
-    var label: String = ""
+    @JvmField
+    var title: String? = ""
+    @JvmField
+    var imgUrl: String? = ""
+    @JvmField
+    var details: String? = ""
+    @JvmField
+    var location: String? = ""
+    @JvmField
+    var label: String? = ""
+    @JvmField
     var timestamp: Long? = null
 
     @Ignore
     constructor()
     constructor(
         id: String,
-        title: String,
-        imgUrl: String,
-        details: String,
-        location: String,
-        label: String,
+        title: String?,
+        imgUrl: String?,
+        details: String?,
+        location: String?,
+        label: String?,
         timestamp: Long?
     ) {
         this.title = title
@@ -57,16 +63,15 @@ class Post {
         const val LOCATION = "location"
         const val TIMESTAMP = "timestamp"
         const val COLLECTION = "posts"
-        fun fromJson(json: Map<String?, Any?>): Post {
-            val id = json[ID] as String
-            val label = json[LABEL] as String
-            val name = json[TITLE] as String
-            val image = json[IMAGE] as String
-            val details = json[DETAILS] as String
-            val location = json[LOCATION] as String
+        fun fromJson(json: Map<String?, Any?>?): Post {
+            val id = json!![ID] as String?
+            val label = json[LABEL] as String?
+            val name = json[TITLE] as String?
+            val image = json[IMAGE] as String?
+            val details = json[DETAILS] as String?
+            val location = json[LOCATION] as String?
             val timestamp = json[TIMESTAMP] as Long?
-            return Post(id, name, image, details, location, label, timestamp)
+            return Post(id!!, name, image, details, location, label, timestamp)
         }
     }
 }
-
