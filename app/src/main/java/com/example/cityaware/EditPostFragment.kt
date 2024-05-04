@@ -1,4 +1,4 @@
-package com.example.cityaware
+package com.example.karenhub
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,7 +13,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -23,12 +22,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation.findNavController
-import com.example.cityaware.databinding.FragmentEditPostBinding
-import com.example.cityaware.model.Model
+import com.example.karenhub.databinding.FragmentEditPostBinding
+import com.example.karenhub.model.Model
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.squareup.picasso.Picasso
-
 
 class EditPostFragment : Fragment() {
     var binding: FragmentEditPostBinding? = null
@@ -54,7 +52,7 @@ class EditPostFragment : Fragment() {
         sp = requireContext().getSharedPreferences("user", Context.MODE_PRIVATE)
         updates = HashMap()
         val bundle = arguments
-        if (!bundle!!.isEmpty()) {
+        if (!bundle!!.isEmpty) {
             location = bundle.getParcelable("location")
             locationName = bundle.getString("locationName")
         }
@@ -68,35 +66,28 @@ class EditPostFragment : Fragment() {
                 return false
             }
         }, this, Lifecycle.State.RESUMED)
-        cameraLauncher = registerForActivityResult<Void?, Bitmap>(
-            ActivityResultContracts.TakePicturePreview(),
-            object : ActivityResultCallback<Bitmap?> {
-                override fun onActivityResult(result: Bitmap?) {
-                    if (result != null) {
-                        viewModelProvider = ViewModelProvider(activity!!)
-                        val viewModel = viewModelProvider!![MapsFragmentModel::class.java]
-                        binding!!.avatarImgEditPost.setImageBitmap(result)
-                        var bundle = Bundle()
-                        if (viewModel.getSavedInstanceStateData() != null) {
-                            bundle = viewModel.getSavedInstanceStateData()!!
-                        }
-                        bundle.putParcelable("imgBitmap", result)
-                        viewModel.setSavedInstanceStateData(bundle)
-                        isAvatarSelected = true
-                    }
+        cameraLauncher = registerForActivityResult<Void?, Bitmap>(ActivityResultContracts.TakePicturePreview()) { result ->
+            if (result != null) {
+                viewModelProvider = ViewModelProvider(requireActivity())
+                val viewModel = viewModelProvider!!.get(
+                    MapsFragmentModel::class.java
+                )
+                binding!!.avatarImgEditPost.setImageBitmap(result)
+                var bundle: Bundle? = Bundle()
+                if (viewModel.savedInstanceStateData != null) {
+                    bundle = viewModel.savedInstanceStateData
                 }
-            })
-        galleryLauncher = registerForActivityResult<String, Uri>(
-            ActivityResultContracts.GetContent(),
-            object : ActivityResultCallback<Uri?> {
-
-                override fun onActivityResult(result: Uri?) {
-                    if (result != null) {
-                        binding!!.avatarImgEditPost.setImageURI(result)
-                        isAvatarSelected = true
-                    }
-                }
-            })
+                bundle!!.putParcelable("imgBitmap", result)
+                viewModel.savedInstanceStateData = bundle
+                isAvatarSelected = true
+            }
+        }
+        galleryLauncher = registerForActivityResult<String, Uri>(ActivityResultContracts.GetContent()) { result ->
+            if (result != null) {
+                binding!!.avatarImgEditPost.setImageURI(result)
+                isAvatarSelected = true
+            }
+        }
     }
 
     override fun onCreateView(
@@ -111,9 +102,9 @@ class EditPostFragment : Fragment() {
         label = requireArguments().getString("editLabel")
         title = requireArguments().getString("EditTitle")
         details = requireArguments().getString("Editdetails")
-        val view: View = binding!!.getRoot()
+        val view: View = binding!!.root
         viewModelProvider = ViewModelProvider(requireActivity())
-        viewModel = viewModelProvider!![MapsFragmentModel::class.java]
+        viewModel = viewModelProvider!!.get(MapsFragmentModel::class.java)
         if (locationName != null) {
             binding!!.addresseditpost.setText(locationName)
         }
@@ -130,17 +121,18 @@ class EditPostFragment : Fragment() {
         if (locationName != null) {
             binding!!.addresseditpost.setText(locationName)
         }
-        binding!!.addLoctionEditPost.setOnClickListener(View.OnClickListener { view ->
-            findNavController(
-                view
-            ).navigate(R.id.mapsFragment, savedInstanceState)
-        })
+        binding!!.addLoctionEditPost.setOnClickListener { view ->
+            findNavController(view).navigate(
+                R.id.mapsFragment,
+                savedInstanceState
+            )
+        }
 
         //save btn
-        binding!!.saveEditPost.setOnClickListener { view1 ->
-            val editedTitle: String = binding!!.editpostTitle.getText().toString()
-            val editedDetails: String = binding!!.editpostDescription.getText().toString()
-            val editedLocation: String = binding!!.addresseditpost.getText().toString()
+        binding!!.saveEditPost.setOnClickListener { view1: View? ->
+            val editedTitle = binding!!.editpostTitle.text.toString()
+            val editedDetails = binding!!.editpostDescription.text.toString()
+            val editedLocation = binding!!.addresseditpost.text.toString()
             if (editedTitle != null && editedTitle !== title) {
                 updates!!["title"] = editedTitle
             }
@@ -151,24 +143,18 @@ class EditPostFragment : Fragment() {
                 updates!!["location"] = editedLocation
             }
             if (isAvatarSelected) {
-                binding!!.avatarImgEditPost.setDrawingCacheEnabled(true)
+                binding!!.avatarImgEditPost.isDrawingCacheEnabled = true
                 binding!!.avatarImgEditPost.buildDrawingCache()
-                val bitmap =
-                    (binding!!.avatarImgEditPost.getDrawable() as BitmapDrawable).bitmap
-                Model.instance().uploadImage(id, bitmap, object : Model.Listener<String?> {
-                    override fun onComplete(data: String?) {
-                        if (data != null) {
-                            updates!!["image"] = data
-                            imgUrl = data
-                            Model.instance().updatePostById(id, updates)
-                        } else {
-                            Model.instance().updatePostById(id, updates)
-                        }
-
+                val bitmap = (binding!!.avatarImgEditPost.drawable as BitmapDrawable).bitmap
+                Model.instance().uploadImage(id, bitmap) { url: String? ->
+                    if (url != null) {
+                        updates!!["image"] = url
+                        imgUrl = url
+                        Model.instance().updatePostById(id, updates)
                     }
-
-                })
-
+                }
+            } else {
+                Model.instance().updatePostById(id, updates)
             }
             viewModelProvider = ViewModelProvider(requireActivity())
             userViewModel = viewModelProvider!!.get(UserProfileViewModel::class.java)
@@ -178,18 +164,17 @@ class EditPostFragment : Fragment() {
             )
                 .toBundle()
             startActivity(requireActivity().intent, bundle)
-            if (userViewModel!!.getActiveState()) {
+            if (userViewModel!!.activeState) {
                 findNavController(view).navigate(R.id.userProfile)
             }
         }
-        binding!!.cancelBtnEditPost.setOnClickListener { view1 ->
-            findNavController(view1).popBackStack(
-                R.id.postFragment,
-                false
-            )
+        binding!!.cancelBtnEditPost.setOnClickListener { view1: View? ->
+            findNavController(
+                view1!!
+            ).popBackStack(R.id.postFragment, false)
         }
-        binding!!.imageBtnEditPost.setOnClickListener { view1 -> cameraLauncher!!.launch(null) }
-        binding!!.galleryBtnEditPost.setOnClickListener { view1 -> galleryLauncher!!.launch("media/*") }
+        binding!!.imageBtnEditPost.setOnClickListener { view1: View? -> cameraLauncher!!.launch(null) }
+        binding!!.galleryBtnEditPost.setOnClickListener { view1: View? -> galleryLauncher!!.launch("media/*") }
         return view
     }
 
@@ -207,26 +192,28 @@ class EditPostFragment : Fragment() {
         bottomNavigationView!!.visibility = View.VISIBLE
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
         (activity as AppCompatActivity?)!!.supportActionBar!!.setShowHideAnimationEnabled(true)
-        viewModel!!.setSavedInstanceStateData(Bundle())
+        viewModel!!.savedInstanceStateData = (Bundle())
     }
 
     override fun onResume() {
         super.onResume()
         val viewModelProvider = ViewModelProvider(requireActivity())
-        val viewModel = viewModelProvider[MapsFragmentModel::class.java]
-        val savedInstanceStateData: Bundle = viewModel.getSavedInstanceStateData()!!
+        val viewModel = viewModelProvider.get(
+            MapsFragmentModel::class.java
+        )
+        val savedInstanceStateData = viewModel.savedInstanceStateData
         if (savedInstanceStateData != null) {
-            location = viewModel.getSavedInstanceStateData()!!.getParcelable("location")
-            locationName = viewModel.getSavedInstanceStateData()!!.getString("locationName")
+            location = viewModel.savedInstanceStateData!!.getParcelable("location")
+            locationName = viewModel.savedInstanceStateData!!.getString("locationName")
             if (locationName != null) {
                 binding!!.addresseditpost.setText(locationName)
             }
-            val bitmap: Bitmap = viewModel.getSavedInstanceStateData()!!.getParcelable("imgBitmap")!!
+            val bitmap = viewModel.savedInstanceStateData!!.getParcelable<Bitmap>("imgBitmap")
             if (bitmap != null) {
                 binding!!.avatarImgEditPost.setImageBitmap(bitmap)
             }
         } else {
-            viewModel.setSavedInstanceStateData(Bundle())
+            viewModel.savedInstanceStateData = Bundle()
         }
     }
 
@@ -234,7 +221,7 @@ class EditPostFragment : Fragment() {
         fun newInstance(): EditPostFragment {
             val newEditPostFragment = EditPostFragment()
             val bundle = Bundle()
-            newEditPostFragment.setArguments(bundle)
+            newEditPostFragment.arguments = bundle
             return newEditPostFragment
         }
     }
