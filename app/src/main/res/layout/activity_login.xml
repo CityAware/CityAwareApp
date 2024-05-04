@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_background3"
-    tools:context=".LoginActivity">
+    android:background="@drawable/login_background4"
+    tools:context=".LogInActivity">
 
     <TextView
         android:id="@+id/login_title"
@@ -99,10 +99,12 @@
             android:id="@+id/login_to_signup_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="300dp"
             android:background="@drawable/roundstyle"
             android:text="Do not have an account?\npress here"
             android:textAlignment="center"
+            android:textColor="#ECECEC"
+            android:textStyle="bold"
             android:textSize="20sp" />
 
     </LinearLayout>
