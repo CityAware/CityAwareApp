@@ -205,6 +205,7 @@ class FirebaseModel internal constructor() {
                             java.lang.Long.compare(
                                 p2.timestamp!!,
                                 p1.timestamp!!
+                                //
                             )
                         })
                 }
