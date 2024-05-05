@@ -40,7 +40,7 @@ public class FirebaseModel {
     FirebaseAuth auth;
     FirebaseUser CurrUser;
 
-    FirebaseModel() {
+   public  FirebaseModel() {
 
         db = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
@@ -215,6 +215,23 @@ public class FirebaseModel {
 
     public FirebaseFirestore getDb() {
         return db;
+    }
+    public void deletePostById(String id, Model.Listener<Void> listener) {
+        db.collection(Post.COLLECTION).document(id)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("TAG", "DocumentSnapshot successfully deleted!");
+                        listener.onComplete(null);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("TAG", "Error deleting document", e);
+                    }
+                });
     }
 
     public void getUserPosts(String label, Model.Listener<List<Post>> callback) {

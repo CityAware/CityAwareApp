@@ -1,8 +1,10 @@
 package com.example.cityaware
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +16,9 @@ import androidx.navigation.NavDirections
 import androidx.navigation.Navigation.findNavController
 import com.google.android.gms.maps.model.LatLng
 import com.squareup.picasso.Picasso
-
+import com.example.cityaware.model.FirebaseModel
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 
 
 class PostFragment : Fragment() {
@@ -66,6 +69,7 @@ class PostFragment : Fragment() {
         }
     }
 
+    @SuppressLint("ResourceType")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,7 +77,9 @@ class PostFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_post, container, false)
         val button = view.findViewById<View>(R.id.editBtn_postFrag)
+        val deleteButton = view.findViewById<View>(R.id.deleteBtn_postFrag)
         button.visibility = View.INVISIBLE
+        deleteButton.visibility = View.INVISIBLE
         //show post details
         title = PostFragmentArgs.fromBundle(requireArguments()).postTitle
         details = PostFragmentArgs.fromBundle(requireArguments()).postDetails
@@ -102,9 +108,19 @@ class PostFragment : Fragment() {
             labelTV!!.setText(label)
         }
 
-        //check if user has permissions
+        //check if user has permissions  to edit
         val currUserLabel = sp!!.getString("label", "")
         if (currUserLabel == label) {
+            deleteButton.visibility=View.VISIBLE
+                deleteButton.setOnClickListener { view ->
+                    Log.d("PostFragment", id!!)
+                    FirebaseModel().deletePostById(id) {
+                        // Navigate back to the home page
+                    }
+                    val action: NavDirections = PostFragmentDirections.actionPostFragmentToPostsListFragment()
+                    findNavController(view).navigate(action)
+                }
+
             button.visibility = View.VISIBLE
             button.setOnClickListener { view ->
                 val action = PostFragmentDirections.actionPostFragmentToEditPostFragment(

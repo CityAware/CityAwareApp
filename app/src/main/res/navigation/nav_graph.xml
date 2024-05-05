@@ -40,6 +40,9 @@
         <argument
             android:name="postId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_postFragment_to_postsListFragment"
+            app:destination="@id/postsListFragment" />
     </fragment>
     <fragment
         android:id="@+id/addNewPostFragment"

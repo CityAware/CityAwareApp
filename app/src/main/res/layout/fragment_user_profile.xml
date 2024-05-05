@@ -71,9 +71,7 @@
                 android:id="@+id/profile_posts_frame"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="10dp">
-
-            </FrameLayout>
+                android:layout_margin="10dp"/>
         </LinearLayout>
 
         <Button
@@ -88,6 +86,8 @@
             app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
             app:layout_constraintStart_toStartOf="@+id/linearLayout2"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
