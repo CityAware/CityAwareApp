@@ -69,7 +69,7 @@ class PostFragment : Fragment() {
         }
     }
 
-    @SuppressLint("ResourceType")
+    @SuppressLint("ResourceType", "SuspiciousIndentation")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

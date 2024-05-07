@@ -86,5 +86,8 @@ public class Model {
     public void updatePostById(String id, Map<String, Object> updates) {
         firebaseModel.updatePostByid(id, updates);
     }
+    public void updateUserById(String id, Map<String, Object> updates) {
+        firebaseModel.updateUserById(id, updates);
+    }
 }
 

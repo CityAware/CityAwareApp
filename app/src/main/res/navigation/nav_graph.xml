@@ -108,9 +108,22 @@
         android:name="com.example.cityaware.userProfile"
         android:label=""
         tools:layout="@layout/fragment_user_profile" >
+
         <action
             android:id="@+id/action_postsListFragment_to_postFragment"
             app:destination="@id/postFragment" />
+        <action
+            android:id="@+id/action_userProfile_to_editUserProfile"
+            app:destination="@id/editUserProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editUserProfileFragment"
+        android:name="com.example.cityaware.EditProfileFragment"
+        android:label=""
+        tools:layout="@layout/fragment_edit_profile" >
+        <action
+            android:id="@+id/action_postsListFragment_to_postFragment"
+            app:destination="@id/userProfile" />
     </fragment>
     <action android:id="@+id/action_global_editPostFragment" app:destination="@id/editPostFragment" />
 </navigation>

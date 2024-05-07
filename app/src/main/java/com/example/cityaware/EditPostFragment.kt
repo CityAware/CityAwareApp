@@ -32,6 +32,7 @@ class EditPostFragment : Fragment() {
     var binding: FragmentEditPostBinding? = null
     var location: LatLng? = null
     var locationName: String? = null
+
     var title: String? = null
     var details: String? = null
     var imgUrl: String? = null
