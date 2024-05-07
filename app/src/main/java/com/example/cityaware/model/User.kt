@@ -7,7 +7,7 @@ class User {
     var imgUrl: String? = null
 
     internal constructor()
-    constructor(email: String?, label: String? , id: String, imgUrl: String?) {
+    constructor(email: String?, label: String? ) {
         this.email = email
         this.label = label
         this.id = id
@@ -18,8 +18,8 @@ class User {
         val json: MutableMap<String, Any?> = HashMap()
         json[EMAIL] = email
         json[ACCOUNT_LABEL] = label
-        json[ID] = id
-        json[IMAGE] = imgUrl
+//        json[ID] = id
+//        json[IMAGE] = imgUrl
         return json
     }
 
@@ -27,16 +27,16 @@ class User {
         const val EMAIL = "email"
         const val ACCOUNT_LABEL = "label"
         const val COLLECTION = "users"
-        const val IMAGE = "imgUrl"
-        const val ID = "id"
+//        const val IMAGE = "imgUrl"
+//        const val ID = "id"
         fun fromJson(json: Map<String?, Any?>): User {
             val email =
                 json[EMAIL] as String?
             val label =
                 json[ACCOUNT_LABEL] as String?
-            val id = json[ID] as String
-            val imgUrl = json[IMAGE] as String
-            return User(email, label, id, imgUrl)
+//            val id = json[ID] as String
+//            val imgUrl = json[IMAGE] as String
+            return User(email, label)
         }
     }
 }
