@@ -1,22 +1,17 @@
 package com.example.cityaware.model;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
 import androidx.core.os.HandlerCompat;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 import java.util.Map;
@@ -86,8 +81,8 @@ public class Model {
     public void updatePostById(String id, Map<String, Object> updates) {
         firebaseModel.updatePostByid(id, updates);
     }
-    public void updateUserById(String id, Map<String, Object> updates) {
-        firebaseModel.updateUserById(id, updates);
+    public void updateUserLabelByLabel(Context context, String label, Map<String, Object> updates) {
+        firebaseModel.updateUserLabelByLabel(context,label, updates);
     }
 }
 

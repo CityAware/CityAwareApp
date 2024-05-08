@@ -13,6 +13,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +26,8 @@ import androidx.navigation.Navigation
 import com.example.cityaware.databinding.FragmentEditProfileBinding
 import com.example.cityaware.model.Model
 import com.example.cityaware.model.User
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.squareup.picasso.Picasso
 
@@ -78,7 +81,6 @@ class EditProfileFragment : Fragment() {
 
 
         // Display the user's current profile information
-        binding!!.edituserEmail.setText(email)
         binding!!.edituserLabel.setText(label)
         Picasso.get().load(imgUrl).into(binding!!.avatarImgEditUser)
 
@@ -86,17 +88,16 @@ class EditProfileFragment : Fragment() {
 
         binding!!.saveEditUserProfile.setOnClickListener { view ->
             // Get the updated profile information
-            val updatedEmail = binding!!.edituserEmail.text.toString()
+
             val updatedLabel = binding!!.edituserLabel.text.toString()
 
-            if (updatedEmail != null && updatedEmail !== email) {
-                updates!!["email"] = updatedEmail
-            }
+
             if (updatedLabel != null && updatedLabel !== label) {
                 updates!!["label"] = updatedLabel
             }
             Log.d("Updates", updates.toString())  // Add this line
-            Model.instance().updateUserById(id, updates)
+
+            Model.instance().updateUserLabelByLabel(context, label, updates)
 
 //            if (imgUrl != null && imgUrl != "") {
 //                Picasso.get().load(imgUrl).into(binding!!.avatarImgEditUser)

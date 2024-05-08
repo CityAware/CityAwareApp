@@ -1,6 +1,8 @@
 package com.example.cityaware.model;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
@@ -99,34 +101,74 @@ public class FirebaseModel {
             }
         });
     }
-public void updateUserById(String id, Map<String, Object> updates){
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    Log.d("map",updates.toString());
-    CollectionReference collRef = db.collection("users");
-    collRef.whereEqualTo("id", id)
-            .get()
-            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        DocumentReference docRef = documentSnapshot.getReference();
-                        docRef.update(updates)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("TAG1", "DocumentSnapshot successfully updated!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("TAG2", "Error updating document", e);
-                                    }
-                                });
+
+    public void updateUserLabelByLabel(Context context, String oldLabel, Map<String, Object> updates){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollRef = db.collection("users");
+        CollectionReference postsCollRef = db.collection("posts");
+
+        usersCollRef.whereEqualTo("label", oldLabel)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            DocumentReference docRef = documentSnapshot.getReference();
+                            docRef.update(updates)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("TAG1", "User document successfully updated!");
+
+                                            // Update the label of all posts
+                                            String newLabel = (String) updates.get("label");
+                                            postsCollRef.whereEqualTo("label", oldLabel)
+                                                    .get()
+                                                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                                            for (QueryDocumentSnapshot postSnapshot : queryDocumentSnapshots) {
+                                                                postSnapshot.getReference().update("label", newLabel)
+                                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
+                                                                                Log.d("TAG1", "Post document successfully updated!");
+                                                                            }
+                                                                        })
+                                                                        .addOnFailureListener(new OnFailureListener() {
+                                                                            @Override
+                                                                            public void onFailure(@NonNull Exception e) {
+                                                                                Log.w("TAG2", "Error updating post document", e);
+                                                                            }
+                                                                        });
+                                                            }
+                                                        }
+                                                    });
+
+                                            // Update the local user data
+                                            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    User updatedUser = User.Companion.fromJson(documentSnapshot.getData());
+                                                    SharedPreferences sp = context.getSharedPreferences("user", Context.MODE_PRIVATE);
+                                                    SharedPreferences.Editor editor = sp.edit();
+                                                    editor.putString("label", updatedUser.getLabel());
+                                                    editor.apply();
+                                                }
+                                            });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w("TAG2", "Error updating user document", e);
+                                        }
+                                    });
+                        }
                     }
-                }
-            });
-}
+                });
+    }
+
     public void updatePostByid(String id, Map<String, Object> updates){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Log.d("map",updates.toString());

@@ -1,6 +1,11 @@
 package com.example.cityaware.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 class User {
+    @PrimaryKey
     var email: String? = ""
     var label: String? = ""
     var id = ""
@@ -29,7 +34,7 @@ class User {
         const val COLLECTION = "users"
 //        const val IMAGE = "imgUrl"
 //        const val ID = "id"
-        fun fromJson(json: Map<String?, Any?>): User {
+        public fun  fromJson(json: Map<String?, Any?>): User {
             val email =
                 json[EMAIL] as String?
             val label =

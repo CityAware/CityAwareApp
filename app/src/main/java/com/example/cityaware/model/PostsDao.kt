@@ -1,6 +1,7 @@
 package com.example.cityaware.model
 
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -10,7 +11,7 @@ import androidx.room.Query
 @Dao
 interface PostsDao {
    @get:Query("select * from Post")
-   val all: List<Post?>?
+   val all: LiveData<List<Post>>
 
    @Query("select * from Post where id = :postId")
    fun getPostById(postId: String?): Post?
